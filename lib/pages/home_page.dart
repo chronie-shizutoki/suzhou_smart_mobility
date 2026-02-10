@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../services/suzhi_bus_api.dart';
@@ -23,11 +24,27 @@ class _HomePageState extends State<HomePage> {
   String _errorMessage = '';
   String? _expandedStationId;
   static const int _defaultExpandedCount = 4;
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
     _queryNearbyStations();
+    _startAutoRefresh();
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startAutoRefresh() {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (mounted) {
+        _queryNearbyStations();
+      }
+    });
   }
 
   Future<void> _queryNearbyStations() async {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../services/suzhi_bus_api.dart';
@@ -30,11 +31,27 @@ class _StationDetailPageState extends State<StationDetailPage> {
   List<models.BusRoute> _routes = [];
   bool _isLoading = true;
   String _errorMessage = '';
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
     _loadStationRoutes();
+    _startAutoRefresh();
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startAutoRefresh() {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (mounted) {
+        _loadStationRoutes();
+      }
+    });
   }
 
   Future<void> _loadStationRoutes() async {
@@ -376,10 +393,12 @@ class _StationDetailPageState extends State<StationDetailPage> {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _routes.length,
-      itemBuilder: (context, index) {
+    return RefreshIndicator(
+      onRefresh: _loadStationRoutes,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _routes.length,
+        itemBuilder: (context, index) {
         final route = _routes[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -501,6 +520,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
           ),
         );
       },
+      ),
     );
   }
 }
