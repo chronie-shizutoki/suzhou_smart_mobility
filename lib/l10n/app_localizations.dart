@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class AppLocalizations {
   static const Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      'appTitle': 'SuZhou Smart Mobility',
+      'appTitle': 'Suzhou Smart Mobility',
       'home': 'Home',
       'search': 'Search',
       'settings': 'Settings',

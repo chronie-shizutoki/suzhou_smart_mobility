@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
       animation: _settingsManager,
       builder: (context, child) {
         return MaterialApp(
-          title: 'SuZhou Smart Mobility',
+          title: 'Suzhou Smart Mobility',
           debugShowCheckedModeBanner: false,
           theme: GlassTheme.lightTheme,
           darkTheme: GlassTheme.darkTheme,
