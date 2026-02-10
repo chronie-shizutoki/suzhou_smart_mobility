@@ -1,16 +1,24 @@
 # suzhou_smart_mobility
 
-A new Flutter project.
+## 已完成：
+- 首页全部功能
+- 导航栏
+- 搜索基础框架
+- 站台/线路信息页基本框架
 
-## Getting Started
+## 待完成：
+- 搜索功能完善
+- 站台/线路信息页详细内容
+- 地图功能
+- 国际化完善与使用ARB gen-i10n重构
+- 大屏幕适配
+- 关怀/长辈模式适配
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 特色功能
+- 避免微信依赖
+- 提供多语言支持（简体中文、繁体中文、英文、日文、韩文）
+- 关怀/长辈模式适配
+- 多屏幕适配
+- 液态玻璃UI设计
+- 全平台支持（Android、iOS、Windows、macOS、Linux）
+- 高度可定制化

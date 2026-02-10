@@ -9,6 +9,7 @@ import 'route_detail_page.dart';
 class StationDetailPage extends StatefulWidget {
   final String stationId;
   final String stationName;
+  final String? stationRoad;
   final double latitude;
   final double longitude;
 
@@ -16,6 +17,7 @@ class StationDetailPage extends StatefulWidget {
     super.key,
     required this.stationId,
     required this.stationName,
+    this.stationRoad,
     required this.latitude,
     required this.longitude,
   });
@@ -130,6 +132,111 @@ class _StationDetailPageState extends State<StationDetailPage> {
     }
   }
 
+  Widget _buildBusInfo(BuildContext context, AppLocalizations localizations, models.BusRoute route, int busIndex) {
+    final nearbyForecastStation = busIndex == 1 ? route.nearbyForecastStation : route.nearbyForecastStation2;
+    final nearbyForecastDistance = busIndex == 1 ? route.nearbyForecastDistance : route.nearbyForecastDistance2;
+    final predictArriveTime = busIndex == 1 ? route.predictArriveTime : route.predictArriveTime2;
+
+    if (nearbyForecastStation == null) {
+      return const SizedBox.shrink();
+    }
+
+    if (nearbyForecastStation == -1) {
+      return Text(
+        localizations.waitingForDeparture,
+        style: TextStyle(
+          fontSize: 12,
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        ),
+      );
+    }
+
+    if (nearbyForecastStation == 0 && nearbyForecastDistance == 0 && predictArriveTime == 0) {
+      return Text(
+        localizations.busAtStation,
+        style: const TextStyle(
+          fontSize: 12,
+          color: Colors.green,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
+
+    if (nearbyForecastStation == 0) {
+      return Text(
+        localizations.arrivingSoon,
+        style: const TextStyle(
+          fontSize: 12,
+          color: Colors.green,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
+
+    final timeText = predictArriveTime != null && predictArriveTime > 0
+        ? '${predictArriveTime}${localizations.minutes}'
+        : '1${localizations.withinMinutes}';
+    final distanceText = nearbyForecastDistance != null && nearbyForecastDistance > 0
+        ? '${(nearbyForecastDistance / 1000).toStringAsFixed(1)}km'
+        : '100m内';
+
+    return Row(
+      children: [
+        Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            color: busIndex == 1 ? Colors.green : Colors.purple,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              '$busIndex',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          timeText,
+          style: TextStyle(
+            fontSize: 12,
+            color: busIndex == 1 ? Colors.green : Colors.purple,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          '$nearbyForecastStation${localizations.stations}',
+          style: TextStyle(
+            fontSize: 12,
+            color: busIndex == 1 ? Colors.green : Colors.purple,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          '/',
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          distanceText,
+          style: TextStyle(
+            fontSize: 12,
+            color: busIndex == 1 ? Colors.green : Colors.purple,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -194,12 +301,13 @@ class _StationDetailPageState extends State<StationDetailPage> {
                         fontWeight: FontWeight.bold,
                       ),
                 ),
-                Text(
-                  localizations.stationDetail,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                      ),
-                ),
+                if (widget.stationRoad != null)
+                  Text(
+                    widget.stationRoad!,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        ),
+                  ),
               ],
             ),
           ),
@@ -281,67 +389,113 @@ class _StationDetailPageState extends State<StationDetailPage> {
             },
             child: Container(
               decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.directions_bus,
-                    color: Colors.blue,
-                  ),
-                ),
-                title: Text(
-                  route.routeName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.trip_origin,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                          const SizedBox(width: 4),
-                          Text('${localizations.from}: ${route.startStation ?? localizations.notAvailable}'),
-                        ],
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.directions_bus,
+                          color: Colors.blue,
+                        ),
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.place,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                          const SizedBox(width: 4),
-                          Text('${localizations.to}: ${route.endStation ?? localizations.notAvailable}'),
-                        ],
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              route.routeName,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.trip_origin,
+                                  size: 16,
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                ),
+                                const SizedBox(width: 4),
+                                Text('${localizations.from}: ${route.startStation ?? localizations.notAvailable}'),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.place,
+                                  size: 16,
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                ),
+                                const SizedBox(width: 4),
+                                Text('${localizations.to}: ${route.endStation ?? localizations.notAvailable}'),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    route.routeId,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                  if (route.hasTimeTable == true) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${localizations.firstBus}${route.startTime ?? ''}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.purple.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${localizations.lastBus}${route.endTime ?? ''}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.purple,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
+                    const SizedBox(height: 8),
+                    _buildBusInfo(context, localizations, route, 1),
+                    const SizedBox(height: 4),
+                    _buildBusInfo(context, localizations, route, 2),
+                  ] else
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        localizations.notOperatingToday,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),

@@ -130,6 +130,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           builder: (context) => StationDetailPage(
             stationId: station.stationId,
             stationName: station.stationName,
+            stationRoad: station.stationRoad,
             latitude: station.latitude,
             longitude: station.longitude,
           ),
@@ -388,23 +389,43 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
             },
             child: Container(
               decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.blue,
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.location_on,
-                    color: Colors.blue,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          station.stationName,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        if (station.stationRoad != null || station.stationDirect != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            _buildStationTitle(station),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                ),
-                title: Text(
-                  station.stationName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+                ],
               ),
             ),
           ),
@@ -486,58 +507,68 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
             },
             child: Container(
               decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.directions_bus,
+                      color: Colors.blue,
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.directions_bus,
-                    color: Colors.blue,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          route.routeName,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.trip_origin,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                            const SizedBox(width: 4),
+                            Text('${localizations.from}: ${route.startStation ?? localizations.notAvailable}'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.place,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                            const SizedBox(width: 4),
+                            Text('${localizations.to}: ${route.endStation ?? localizations.notAvailable}'),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                title: Text(
-                  route.routeName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.trip_origin,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                          const SizedBox(width: 4),
-                          Text('${localizations.from}: ${route.startStation ?? localizations.notAvailable}'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.place,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                          const SizedBox(width: 4),
-                          Text('${localizations.to}: ${route.endStation ?? localizations.notAvailable}'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                ],
               ),
             ),
           ),
         );
       },
     );
+  }
+
+  String _buildStationTitle(Station station) {
+    final parts = <String>[];
+    if (station.stationRoad != null) parts.add(station.stationRoad!);
+    if (station.stationDirect != null) parts.add(station.stationDirect!);
+    return parts.join(' ');
   }
 }
