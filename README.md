@@ -7,7 +7,7 @@ A cross-platform smart bus application for Suzhou, providing real-time bus track
 
 ## Project Introduction
 
-SuZhi Mobility is a modern application developed with Flutter, designed to help users efficiently utilize Suzhou's public transportation system. The app provides real-time bus arrival predictions, route details, stop information, and comprehensive search functionality.
+Suzhou Smart Mobility is a modern application developed with Flutter, designed to help users efficiently utilize Suzhou's public transportation system. The app provides real-time bus arrival predictions, route details, stop information, and comprehensive search functionality.
 
 ### Core Features
 
