@@ -23,19 +23,19 @@ class GlassTheme {
         foregroundColor: Color(0xFF1A1A2E),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Colors.white.withOpacity(0.8),
+        backgroundColor: Colors.white.withValues(alpha: 0.8),
         elevation: 0,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: Colors.blue.withOpacity(0.9),
+        backgroundColor: Colors.blue.withValues(alpha: 0.9),
         elevation: 8,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.5),
+        fillColor: Colors.white.withValues(alpha: 0.5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
@@ -83,19 +83,19 @@ class GlassTheme {
         foregroundColor: Colors.white,
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Colors.black.withOpacity(0.8),
+        backgroundColor: Colors.black.withValues(alpha: 0.8),
         elevation: 0,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: Colors.blue.withOpacity(0.9),
+        backgroundColor: Colors.blue.withValues(alpha: 0.9),
         elevation: 8,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
+        fillColor: Colors.white.withValues(alpha: 0.1),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
@@ -123,15 +123,15 @@ class GlassTheme {
 
   static BoxDecoration get glassDecoration {
     return BoxDecoration(
-      color: Colors.white.withOpacity(0.85),
+      color: Colors.white.withValues(alpha: 0.85),
       borderRadius: BorderRadius.circular(20),
       border: Border.all(
-        color: Colors.white.withOpacity(0.5),
+        color: Colors.white.withValues(alpha: 0.5),
         width: 1,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 10,
           offset: const Offset(0, 5),
         ),
@@ -141,15 +141,15 @@ class GlassTheme {
 
   static BoxDecoration get glassDecorationDark {
     return BoxDecoration(
-      color: Colors.white.withOpacity(0.1),
+      color: Colors.white.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(20),
       border: Border.all(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         width: 1,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.3),
+          color: Colors.black.withValues(alpha: 0.3),
           blurRadius: 10,
           offset: const Offset(0, 5),
         ),

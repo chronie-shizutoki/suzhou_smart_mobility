@@ -242,4 +242,47 @@ class SuZhiBusAPI {
       throw Exception('Failed to get route station data: $e');
     }
   }
+
+  static Future<Map<String, dynamic>> getBusBySegmentId(String segmentId) async {
+    try {
+      final uri = Uri.parse(_buildUrl('/Query_BusBySegmentID')).replace(
+        queryParameters: {'segmentId': segmentId},
+      );
+
+      final headers = _buildHeaders();
+      final response = await _client.get(uri, headers: headers);
+      final decrypted = DecryptUtil.decryptResponseToJson(response);
+      return decrypted;
+    } catch (e) {
+      throw Exception('Failed to get bus by segment id: $e');
+    }
+  }
+
+  static Future<Map<String, dynamic>> queryByStationId(
+    String stationId,
+    String requestId, {
+    String? segmentId,
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'stationId': stationId,
+        'requestId': requestId,
+      };
+
+      if (segmentId != null) {
+        queryParams['segmentId'] = segmentId;
+      }
+
+      final uri = Uri.parse(_buildUrl('/Query_ByStationID')).replace(
+        queryParameters: queryParams,
+      );
+
+      final headers = _buildHeaders();
+      final response = await _client.get(uri, headers: headers);
+      final decrypted = DecryptUtil.decryptResponseToJson(response);
+      return decrypted;
+    } catch (e) {
+      throw Exception('Failed to query by station id: $e');
+    }
+  }
 }

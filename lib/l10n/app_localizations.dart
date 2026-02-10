@@ -59,6 +59,26 @@ class AppLocalizations {
       'walking': 'Walking',
       'withinMinutes': 'within minutes',
       'waitingForDeparture': 'Waiting for departure',
+      'runDirection': 'Run Direction',
+      'ticketPrice': 'Ticket Price',
+      'yuan': 'yuan',
+      'flipPrice': 'Flip Price',
+      'nextDeparture': 'Next Departure',
+      'estimatedDeparture': 'Estimated Departure',
+      'hasPassedLastDeparture': 'Has passed last departure',
+      'highPeak': 'High Peak',
+      'plainPeak': 'Plain Peak',
+      'lowPeak': 'Low Peak',
+      'stationsAway': 'stations away',
+      'km': 'km',
+      'within100m': 'Within 100m',
+      'refresh': 'Refresh',
+      'reverse': 'Reverse',
+      'collect': 'Collect',
+      'collected': 'Collected',
+      'feedback': 'Feedback',
+      'vertical': 'Vertical',
+      'more': 'More',
     },
     'zh': {
       'appTitle': '苏智出行',
@@ -116,6 +136,26 @@ class AppLocalizations {
       'walking': '步行',
       'withinMinutes': '内',
       'waitingForDeparture': '等待发车',
+      'runDirection': '运行方向',
+      'ticketPrice': '票价',
+      'yuan': '元',
+      'flipPrice': '翻牌票价',
+      'nextDeparture': '预计发车',
+      'estimatedDeparture': '预计发车时间',
+      'hasPassedLastDeparture': '已过末班发车时间',
+      'highPeak': '高峰',
+      'plainPeak': '平峰',
+      'lowPeak': '低峰',
+      'stationsAway': '站',
+      'km': 'km',
+      'within100m': '100m内',
+      'refresh': '刷新',
+      'reverse': '换向',
+      'collect': '收藏',
+      'collected': '已收藏',
+      'feedback': '反馈',
+      'vertical': '竖版',
+      'more': '更多',
     },
   };
 
@@ -189,6 +229,26 @@ class AppLocalizations {
   String get minutes => _localizedValues[locale.languageCode]!['minutes']!;
   String get withinMinutes => _localizedValues[locale.languageCode]!['withinMinutes']!;
   String get waitingForDeparture => _localizedValues[locale.languageCode]!['waitingForDeparture']!;
+  String get runDirection => _localizedValues[locale.languageCode]!['runDirection']!;
+  String get ticketPrice => _localizedValues[locale.languageCode]!['ticketPrice']!;
+  String get yuan => _localizedValues[locale.languageCode]!['yuan']!;
+  String get flipPrice => _localizedValues[locale.languageCode]!['flipPrice']!;
+  String get nextDeparture => _localizedValues[locale.languageCode]!['nextDeparture']!;
+  String get estimatedDeparture => _localizedValues[locale.languageCode]!['estimatedDeparture']!;
+  String get hasPassedLastDeparture => _localizedValues[locale.languageCode]!['hasPassedLastDeparture']!;
+  String get highPeak => _localizedValues[locale.languageCode]!['highPeak']!;
+  String get plainPeak => _localizedValues[locale.languageCode]!['plainPeak']!;
+  String get lowPeak => _localizedValues[locale.languageCode]!['lowPeak']!;
+  String get stationsAway => _localizedValues[locale.languageCode]!['stationsAway']!;
+  String get km => _localizedValues[locale.languageCode]!['km']!;
+  String get within100m => _localizedValues[locale.languageCode]!['within100m']!;
+  String get refresh => _localizedValues[locale.languageCode]!['refresh']!;
+  String get reverse => _localizedValues[locale.languageCode]!['reverse']!;
+  String get collect => _localizedValues[locale.languageCode]!['collect']!;
+  String get collected => _localizedValues[locale.languageCode]!['collected']!;
+  String get feedback => _localizedValues[locale.languageCode]!['feedback']!;
+  String get vertical => _localizedValues[locale.languageCode]!['vertical']!;
+  String get more => _localizedValues[locale.languageCode]!['more']!;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

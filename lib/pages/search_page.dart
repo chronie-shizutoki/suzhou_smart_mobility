@@ -172,6 +172,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           MaterialPageRoute(
             builder: (context) => RouteDetailPage(
               segmentId: segmentId!,
+              routeId: route.routeId,
               routeName: route.routeName,
             ),
           ),
@@ -274,7 +275,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           const SizedBox(width: 12),
           Container(
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.9),
+              color: Colors.blue.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(15),
             ),
             child: IconButton(
@@ -297,18 +298,18 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: Colors.blue.withOpacity(0.2),
+          color: Colors.blue.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(10),
         ),
         indicatorSize: TabBarIndicatorSize.tab,
         labelColor: Theme.of(context).colorScheme.primary,
-        unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         tabs: [
           Tab(text: localizations.searchStations),
           Tab(text: localizations.routes),
@@ -363,13 +364,13 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
             Icon(
               Icons.search_off,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
               localizations.noData,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -396,7 +397,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.2),
+                      color: Colors.blue.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -419,7 +420,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                             _buildStationTitle(station),
                             style: TextStyle(
                               fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -481,13 +482,13 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
             Icon(
               Icons.directions_bus,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
               localizations.noData,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -514,7 +515,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.2),
+                      color: Colors.blue.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -537,7 +538,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                             Icon(
                               Icons.trip_origin,
                               size: 16,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                             const SizedBox(width: 4),
                             Text('${localizations.from}: ${route.startStation ?? localizations.notAvailable}'),
@@ -548,7 +549,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                             Icon(
                               Icons.place,
                               size: 16,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                             const SizedBox(width: 4),
                             Text('${localizations.to}: ${route.endStation ?? localizations.notAvailable}'),

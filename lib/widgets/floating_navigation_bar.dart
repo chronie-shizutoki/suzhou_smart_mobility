@@ -25,7 +25,7 @@ class FloatingNavigationBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
+            color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -73,7 +73,7 @@ class FloatingNavigationBar extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isActive
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
@@ -81,7 +81,7 @@ class FloatingNavigationBar extends StatelessWidget {
           icon,
           color: isActive
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           size: 24,
         ),
       ),

@@ -132,6 +132,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
           MaterialPageRoute(
             builder: (context) => RouteDetailPage(
               segmentId: segmentId!,
+              routeId: route.routeId,
               routeName: route.routeName,
             ),
           ),
@@ -163,7 +164,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
         localizations.waitingForDeparture,
         style: TextStyle(
           fontSize: 12,
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         ),
       );
     }
@@ -239,7 +240,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
           '/',
           style: TextStyle(
             fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
           ),
         ),
         const SizedBox(width: 4),
@@ -299,7 +300,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
@@ -322,7 +323,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                   Text(
                     widget.stationRoad!,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                   ),
               ],
@@ -379,13 +380,13 @@ class _StationDetailPageState extends State<StationDetailPage> {
             Icon(
               Icons.directions_bus,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
               localizations.noData,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -417,7 +418,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.2),
+                          color: Colors.blue.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -440,7 +441,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                                 Icon(
                                   Icons.trip_origin,
                                   size: 16,
-                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                                 const SizedBox(width: 4),
                                 Text('${localizations.from}: ${route.startStation ?? localizations.notAvailable}'),
@@ -451,7 +452,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                                 Icon(
                                   Icons.place,
                                   size: 16,
-                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                                 const SizedBox(width: 4),
                                 Text('${localizations.to}: ${route.endStation ?? localizations.notAvailable}'),
@@ -469,7 +470,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.2),
+                            color: Colors.orange.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -485,7 +486,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.purple.withOpacity(0.2),
+                            color: Colors.purple.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -510,7 +511,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                         localizations.notOperatingToday,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
                       ),
                     ),
