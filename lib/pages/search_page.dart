@@ -304,8 +304,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
         controller: _tabController,
         indicator: BoxDecoration(
           color: Colors.blue.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
+        indicatorSize: TabBarIndicatorSize.tab,
         labelColor: Theme.of(context).colorScheme.primary,
         unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         tabs: [
