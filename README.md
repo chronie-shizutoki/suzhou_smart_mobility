@@ -1,4 +1,4 @@
-English | [简体中文](#README-zh-cn.md) | [繁體中文](#README-zh-tw.md) | [日本語](#README-ja.md) | [한국어(AI Generated)](#README-ko.md)
+English | [简体中文](README-zh-cn.md) | [繁體中文](README-zh-tw.md) | [日本語](README-ja.md) | [한국어(AI Generated)](README-ko.md)
 
 ---
 # Suzhou Smart Mobility
