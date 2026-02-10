@@ -89,11 +89,13 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
             _hasTimeTable = currentRoute.isShowTimetable ?? true;
             _stations = currentRoute.stations ?? [];
             
-            final nearbyStation = _stations.firstWhere(
-              (s) => s.isNearby == true,
-              orElse: () => _stations.first,
-            );
-            _currentStationId = nearbyStation.stationId;
+            if (_currentStationId.isEmpty && _stations.isNotEmpty) {
+              final nearbyStation = _stations.firstWhere(
+                (s) => s.isNearby == true,
+                orElse: () => _stations.first,
+              );
+              _currentStationId = nearbyStation.stationId;
+            }
           });
 
           if (_currentStationId.isNotEmpty) {
@@ -192,6 +194,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
         textbool: station.stationId == _currentStationId,
         localTrain: station.localTrain,
         commonIcon: station.commonIcon,
+        stationRoad: station.stationRoad,
       );
     }).toList();
 
@@ -244,6 +247,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           textbool: s.stationId == station.stationId,
           localTrain: s.localTrain,
           commonIcon: s.commonIcon,
+          stationRoad: s.stationRoad,
         );
       }).toList();
     });
@@ -257,6 +261,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
         builder: (context) => StationDetailPage(
           stationId: station.stationId,
           stationName: station.stationName,
+          stationRoad: station.stationRoad,
           latitude: station.latitude,
           longitude: station.longitude,
         ),
@@ -831,7 +836,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
         decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
         child: Center(
           child: Text(
-            localizations.waitingForDeparture,
+            _closeOperate ? localizations.hasPassedLastDeparture : localizations.waitingForDeparture,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),

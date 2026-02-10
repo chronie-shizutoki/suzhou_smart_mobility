@@ -115,6 +115,7 @@ class Station {
   final bool? textbool;
   final bool? localTrain;
   final bool? commonIcon;
+  final String? stationRoad;
 
   Station({
     required this.stationId,
@@ -133,6 +134,7 @@ class Station {
     this.textbool,
     this.localTrain,
     this.commonIcon,
+    this.stationRoad,
   });
 
   factory Station.fromJson(Map<String, dynamic> json) {
@@ -167,6 +169,7 @@ class Station {
       textbool: json['textbool'] is bool ? json['textbool'] : (json['textbool'] == 1),
       localTrain: json['localTrain'] is bool ? json['localTrain'] : (json['localTrain'] == 1),
       commonIcon: json['commonIcon'] is bool ? json['commonIcon'] : (json['commonIcon'] == 1),
+      stationRoad: json['stationRoad']?.toString(),
     );
   }
 
@@ -188,6 +191,7 @@ class Station {
       'textbool': textbool,
       'localTrain': localTrain,
       'commonIcon': commonIcon,
+      'stationRoad': stationRoad,
     };
   }
 }
