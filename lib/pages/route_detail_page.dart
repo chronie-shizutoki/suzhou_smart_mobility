@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../services/suzhi_bus_api.dart';
 import '../models/bus_predict.dart';
 import '../theme/glass_theme.dart';
+import 'station_detail_page.dart';
 
 class RouteDetailPage extends StatefulWidget {
   final String segmentId;
@@ -27,6 +28,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
   List<Station> _stations = [];
   List<BusInfo> _busInfoList = [];
   List<ForecastInfo> _forecastList = [];
+  List<RouteDetail> _allRoutes = [];
   bool _isLoading = true;
   String _errorMessage = '';
   bool _isShowReverse = true;
@@ -36,7 +38,6 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
   Timer? _refreshTimer;
   final ScrollController _scrollController = ScrollController();
   bool _isRefreshing = false;
-  bool _showTimetablePopup = false;
   bool _hasTimeTable = true;
 
   @override
@@ -82,13 +83,17 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           );
 
           setState(() {
+            _allRoutes = routeItems;
             _routeDetail = currentRoute;
             _isShowReverse = routeItems.length > 1;
             _hasTimeTable = currentRoute.isShowTimetable ?? true;
             _stations = currentRoute.stations ?? [];
-            if (_currentStationId.isEmpty && _stations.isNotEmpty) {
-              _currentStationId = _stations.first.stationId;
-            }
+            
+            final nearbyStation = _stations.firstWhere(
+              (s) => s.isNearby == true,
+              orElse: () => _stations.first,
+            );
+            _currentStationId = nearbyStation.stationId;
           });
 
           if (_currentStationId.isNotEmpty) {
@@ -184,7 +189,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
         arriveTime: busList.isNotEmpty ? busList.first.arriveTime : null,
         busName: busList.isNotEmpty ? busList.first.busName : null,
         busNo: busList.isNotEmpty ? busList.first.busNo : null,
-        textbool: station.textbool,
+        textbool: station.stationId == _currentStationId,
         localTrain: station.localTrain,
         commonIcon: station.commonIcon,
       );
@@ -243,6 +248,203 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
       }).toList();
     });
     _loadForecastData();
+  }
+
+  void _onStationLongPress(Station station) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StationDetailPage(
+          stationId: station.stationId,
+          stationName: station.stationName,
+          latitude: station.latitude,
+          longitude: station.longitude,
+        ),
+      ),
+    );
+  }
+
+  void _onReverseRoute() {
+    if (_allRoutes.length < 2) return;
+    
+    final currentIndex = _allRoutes.indexWhere((r) => r.segmentId == widget.segmentId);
+    final nextIndex = (currentIndex + 1) % _allRoutes.length;
+    final nextRoute = _allRoutes[nextIndex];
+    
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RouteDetailPage(
+          segmentId: nextRoute.segmentId,
+          routeId: nextRoute.routeId,
+          routeName: nextRoute.routeName,
+        ),
+      ),
+    );
+  }
+
+  void _showTimetableBottomSheet() async {
+    await _loadTimetable();
+    
+    if (!mounted) return;
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildTimetableBottomSheet(context),
+    );
+  }
+
+  Widget _buildTimetableBottomSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: isDark
+              ? [
+                  const Color(0xFF1A1A2E).withValues(alpha: 0.95),
+                  const Color(0xFF0F0F1A).withValues(alpha: 0.95),
+                ]
+              : [
+                  const Color(0xFFE8EEF5).withValues(alpha: 0.95),
+                  const Color(0xFFF0F4F8).withValues(alpha: 0.95),
+                ],
+        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 20,
+            offset: const Offset(0, -10),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${_routeDetail?.routeName} ${localizations.timetable}',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          if (_timetable != null) ...[
+            if (_timetable!.highInterval != null ||
+                _timetable!.plainInterval != null ||
+                _timetable!.lowInterval != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    if (_timetable!.highInterval != null)
+                      _buildIntervalChip(
+                        context,
+                        '${localizations.highPeak}: ${_timetable!.highInterval}${localizations.minutes}',
+                        Colors.red,
+                      ),
+                    if (_timetable!.plainInterval != null)
+                      _buildIntervalChip(
+                        context,
+                        '${localizations.plainPeak}: ${_timetable!.plainInterval}${localizations.minutes}',
+                        Colors.orange,
+                      ),
+                    if (_timetable!.lowInterval != null)
+                      _buildIntervalChip(
+                        context,
+                        '${localizations.lowPeak}: ${_timetable!.lowInterval}${localizations.minutes}',
+                        Colors.green,
+                      ),
+                  ],
+                ),
+              ),
+            if (_timetable!.timeExtendInfo != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Text(
+                  _timetable!.timeExtendInfo!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ),
+            Container(
+              constraints: const BoxConstraints(maxHeight: 400),
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                shrinkWrap: true,
+                itemCount: _timetable!.timetable?.length ?? 0,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : Colors.black.withValues(alpha: 0.03),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _timetable!.timetable![index],
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+          ] else
+            Padding(
+              padding: const EdgeInsets.all(40),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.schedule,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    localizations.noData,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   String _getForecastStatus(ForecastInfo forecast) {
@@ -305,23 +507,6 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
               ),
             ),
           ),
-          if (_showTimetablePopup)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _showTimetablePopup = false;
-                });
-              },
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.5),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: _buildTimetablePopup(context),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -413,16 +598,26 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
 
     return RefreshIndicator(
       onRefresh: _onRefresh,
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            _buildRouteInfo(context, isDark),
-            _buildForecastSection(context, isDark),
-            _buildStationsList(context, isDark),
-          ],
-        ),
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 120),
+            child: Column(
+              children: [
+                _buildRouteInfo(context, isDark),
+                _buildStationsList(context, isDark),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: _buildForecastSection(context, isDark),
+          ),
+        ],
       ),
     );
   }
@@ -451,14 +646,8 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
-                        if (_hasTimeTable)
-                          TextButton.icon(
-                            onPressed: () async {
-                              await _loadTimetable();
-                              setState(() {
-                                _showTimetablePopup = true;
-                              });
-                            },
+                        TextButton.icon(
+                            onPressed: _showTimetableBottomSheet,
                             icon: const Icon(Icons.schedule, size: 20),
                             label: Text(localizations.timetable),
                             style: TextButton.styleFrom(
@@ -478,11 +667,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
               if (_isShowReverse)
                 IconButton(
                   icon: const Icon(Icons.swap_horiz),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(localizations.reverse)),
-                    );
-                  },
+                  onPressed: _onReverseRoute,
                   tooltip: localizations.reverse,
                 ),
             ],
@@ -550,9 +735,53 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
   }
 
   Widget _buildForecastSection(BuildContext context, bool isDark) {
+    final currentTime = DateTime.now();
+    final startTime = _routeDetail?.startTime;
+    final endTime = _routeDetail?.endTime;
+    
+    bool isBeforeStartTime = false;
+    bool isAfterEndTime = false;
+    
+    if (startTime != null && startTime.isNotEmpty) {
+      try {
+        final startParts = startTime.split(':');
+        if (startParts.length == 2) {
+          final startHour = int.tryParse(startParts[0]) ?? 0;
+          final startMinute = int.tryParse(startParts[1]) ?? 0;
+          final startDateTime = DateTime(
+            currentTime.year,
+            currentTime.month,
+            currentTime.day,
+            startHour,
+            startMinute,
+          );
+          isBeforeStartTime = currentTime.isBefore(startDateTime);
+        }
+      } catch (e) {
+      }
+    }
+    
+    if (endTime != null && endTime.isNotEmpty) {
+      try {
+        final endParts = endTime.split(':');
+        if (endParts.length == 2) {
+          final endHour = int.tryParse(endParts[0]) ?? 0;
+          final endMinute = int.tryParse(endParts[1]) ?? 0;
+          final endDateTime = DateTime(
+            currentTime.year,
+            currentTime.month,
+            currentTime.day,
+            endHour,
+            endMinute,
+          );
+          isAfterEndTime = currentTime.isAfter(endDateTime);
+        }
+      } catch (e) {
+      }
+    }
+
     if (!_hasTimeTable) {
       return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
         child: Center(
@@ -566,14 +795,43 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
       );
     }
 
-    if (_forecastList.isEmpty) {
+    if (isBeforeStartTime) {
       return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
         child: Center(
           child: Text(
-            _closeOperate ? localizations.hasPassedLastDeparture : localizations.waitingForDeparture,
+            localizations.notStarted,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (isAfterEndTime) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
+        child: Center(
+          child: Text(
+            localizations.hasPassedLastDeparture,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_forecastList.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
+        child: Center(
+          child: Text(
+            localizations.waitingForDeparture,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
@@ -583,7 +841,6 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
       child: Column(
@@ -599,11 +856,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           ..._forecastList.take(3).map((forecast) => _buildForecastItem(context, forecast)),
           if (_forecastList.length > 3)
             TextButton(
-              onPressed: () {
-                setState(() {
-                  _showTimetablePopup = true;
-                });
-              },
+              onPressed: _showTimetableBottomSheet,
               child: Text(localizations.more),
             ),
         ],
@@ -725,6 +978,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           Expanded(
             child: InkWell(
               onTap: () => _onStationTap(station),
+              onLongPress: () => _onStationLongPress(station),
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -749,6 +1003,12 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                               color: isSelected ? Colors.blue : null,
                             ),
                           ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.info_outline, size: 18),
+                          onPressed: () => _onStationLongPress(station),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
                         ),
                         if (hasBus)
                           Container(
@@ -816,99 +1076,6 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildTimetablePopup(BuildContext context) {
-    if (_timetable == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        constraints: const BoxConstraints(maxHeight: 500),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${_routeDetail?.routeName} ${localizations.timetable}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    setState(() {
-                      _showTimetablePopup = false;
-                    });
-                  },
-                ),
-              ],
-            ),
-            const Divider(),
-            if (_timetable!.highInterval != null ||
-                _timetable!.plainInterval != null ||
-                _timetable!.lowInterval != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Wrap(
-                  spacing: 8,
-                  children: [
-                    if (_timetable!.highInterval != null)
-                      _buildIntervalChip(
-                        context,
-                        '${localizations.highPeak}: ${_timetable!.highInterval}${localizations.minutes}',
-                        Colors.red,
-                      ),
-                    if (_timetable!.plainInterval != null)
-                      _buildIntervalChip(
-                        context,
-                        '${localizations.plainPeak}: ${_timetable!.plainInterval}${localizations.minutes}',
-                        Colors.orange,
-                      ),
-                    if (_timetable!.lowInterval != null)
-                      _buildIntervalChip(
-                        context,
-                        '${localizations.lowPeak}: ${_timetable!.lowInterval}${localizations.minutes}',
-                        Colors.green,
-                      ),
-                  ],
-                ),
-              ),
-            if (_timetable!.timeExtendInfo != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  _timetable!.timeExtendInfo!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                ),
-              ),
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _timetable!.timetable?.length ?? 0,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      _timetable!.timetable![index],
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

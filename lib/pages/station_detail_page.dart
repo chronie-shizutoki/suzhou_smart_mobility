@@ -160,6 +160,71 @@ class _StationDetailPageState extends State<StationDetailPage> {
     }
 
     if (nearbyForecastStation == -1) {
+      final currentTime = DateTime.now();
+      final startTime = route.startTime;
+      final endTime = route.endTime;
+      
+      bool isBeforeStartTime = false;
+      bool isAfterEndTime = false;
+      
+      if (startTime != null && startTime.isNotEmpty) {
+        try {
+          final startParts = startTime.split(':');
+          if (startParts.length == 2) {
+            final startHour = int.tryParse(startParts[0]) ?? 0;
+            final startMinute = int.tryParse(startParts[1]) ?? 0;
+            final startDateTime = DateTime(
+              currentTime.year,
+              currentTime.month,
+              currentTime.day,
+              startHour,
+              startMinute,
+            );
+            isBeforeStartTime = currentTime.isBefore(startDateTime);
+          }
+        } catch (e) {
+        }
+      }
+      
+      if (endTime != null && endTime.isNotEmpty) {
+        try {
+          final endParts = endTime.split(':');
+          if (endParts.length == 2) {
+            final endHour = int.tryParse(endParts[0]) ?? 0;
+            final endMinute = int.tryParse(endParts[1]) ?? 0;
+            final endDateTime = DateTime(
+              currentTime.year,
+              currentTime.month,
+              currentTime.day,
+              endHour,
+              endMinute,
+            );
+            isAfterEndTime = currentTime.isAfter(endDateTime);
+          }
+        } catch (e) {
+        }
+      }
+      
+      if (isBeforeStartTime) {
+        return Text(
+          localizations.notStarted,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+        );
+      }
+      
+      if (isAfterEndTime) {
+        return Text(
+          localizations.hasPassedLastDeparture,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+        );
+      }
+      
       return Text(
         localizations.waitingForDeparture,
         style: TextStyle(
