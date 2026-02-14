@@ -14,6 +14,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final SettingsManager _settingsManager = SettingsManager();
   ThemeMode _currentThemeMode = ThemeMode.system;
   String _currentLanguage = 'en';
+  bool _careMode = false;
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       _currentThemeMode = _settingsManager.themeMode;
       _currentLanguage = _settingsManager.locale.languageCode;
+      _careMode = _settingsManager.careMode;
     });
   }
 
@@ -40,6 +42,13 @@ class _SettingsPageState extends State<SettingsPage> {
     await _settingsManager.setLocale(Locale(language));
     setState(() {
       _currentLanguage = language;
+    });
+  }
+
+  Future<void> _toggleCareMode(bool value) async {
+    await _settingsManager.setCareMode(value);
+    setState(() {
+      _careMode = value;
     });
   }
 
@@ -102,12 +111,76 @@ class _SettingsPageState extends State<SettingsPage> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        _buildCareModeSection(context, localizations, isDark),
+        const SizedBox(height: 16),
         _buildThemeSection(context, localizations, isDark),
         const SizedBox(height: 16),
         _buildLanguageSection(context, localizations, isDark),
         const SizedBox(height: 16),
         _buildAboutSection(context, localizations, isDark),
       ],
+    );
+  }
+
+  Widget _buildCareModeSection(BuildContext context, AppLocalizations localizations, bool isDark) {
+    return Container(
+      decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.accessibility_new,
+                    color: Colors.orange,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        localizations.careMode,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        localizations.careModeDescription,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SwitchListTile(
+            value: _careMode,
+            onChanged: _toggleCareMode,
+            secondary: Icon(
+              _careMode ? Icons.check_circle : Icons.circle_outlined,
+              color: _careMode ? Colors.orange : Colors.grey,
+            ),
+            title: Text(
+              _careMode ? localizations.careModeEnabled : localizations.careModeDisabled,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -279,7 +352,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ListTile(
             title: Text(localizations.version),
-            subtitle: const Text('1.0.0'),
+            subtitle: const Text('1.0.0 Beta 2'),
             leading: const Icon(Icons.tag, color: Colors.blue),
           ),
         ],

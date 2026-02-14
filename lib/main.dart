@@ -53,11 +53,12 @@ class _MyAppState extends State<MyApp> {
     return AnimatedBuilder(
       animation: _settingsManager,
       builder: (context, child) {
+        final careMode = _settingsManager.careMode;
         return MaterialApp(
           title: 'Suzhou Smart Mobility',
           debugShowCheckedModeBanner: false,
-          theme: GlassTheme.lightTheme,
-          darkTheme: GlassTheme.darkTheme,
+          theme: careMode ? GlassTheme.lightThemeCareMode : GlassTheme.lightTheme,
+          darkTheme: careMode ? GlassTheme.darkThemeCareMode : GlassTheme.darkTheme,
           themeMode: _settingsManager.themeMode,
           locale: _settingsManager.locale,
           localizationsDelegates: const [

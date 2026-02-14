@@ -79,6 +79,10 @@ class AppLocalizations {
       'feedback': 'Feedback',
       'vertical': 'Vertical',
       'more': 'More',
+      'careMode': 'Care Mode',
+      'careModeDescription': 'Larger fonts and higher contrast for better readability',
+      'careModeEnabled': 'Care mode enabled',
+      'careModeDisabled': 'Care mode disabled',
     },
     'zh': {
       'appTitle': '苏智出行',
@@ -156,6 +160,10 @@ class AppLocalizations {
       'feedback': '反馈',
       'vertical': '竖版',
       'more': '更多',
+      'careMode': '关怀模式',
+      'careModeDescription': '更大字号和更高对比度，提升可读性',
+      'careModeEnabled': '关怀模式已启用',
+      'careModeDisabled': '关怀模式已关闭',
     },
   };
 
@@ -249,6 +257,10 @@ class AppLocalizations {
   String get feedback => _localizedValues[locale.languageCode]!['feedback']!;
   String get vertical => _localizedValues[locale.languageCode]!['vertical']!;
   String get more => _localizedValues[locale.languageCode]!['more']!;
+  String get careMode => _localizedValues[locale.languageCode]!['careMode']!;
+  String get careModeDescription => _localizedValues[locale.languageCode]!['careModeDescription']!;
+  String get careModeEnabled => _localizedValues[locale.languageCode]!['careModeEnabled']!;
+  String get careModeDisabled => _localizedValues[locale.languageCode]!['careModeDisabled']!;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

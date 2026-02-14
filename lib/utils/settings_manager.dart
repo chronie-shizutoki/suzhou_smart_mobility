@@ -4,9 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsManager extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   Locale _locale = const Locale('en');
+  bool _careMode = false;
 
   ThemeMode get themeMode => _themeMode;
   Locale get locale => _locale;
+  bool get careMode => _careMode;
 
   static final SettingsManager _instance = SettingsManager._internal();
   factory SettingsManager() => _instance;
@@ -16,6 +18,7 @@ class SettingsManager extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final themeModeValue = prefs.getString('themeMode');
     final language = prefs.getString('language');
+    final careModeValue = prefs.getBool('careMode');
 
     if (themeModeValue != null) {
       switch (themeModeValue) {
@@ -34,6 +37,10 @@ class SettingsManager extends ChangeNotifier {
 
     if (language != null) {
       _locale = Locale(language);
+    }
+
+    if (careModeValue != null) {
+      _careMode = careModeValue;
     }
 
     notifyListeners();
@@ -63,6 +70,13 @@ class SettingsManager extends ChangeNotifier {
     _locale = locale;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('language', locale.languageCode);
+    notifyListeners();
+  }
+
+  Future<void> setCareMode(bool enabled) async {
+    _careMode = enabled;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('careMode', enabled);
     notifyListeners();
   }
 }
