@@ -362,13 +362,13 @@ final decrypted = DecryptUtil.decryptResponseToJson(response);
 - [x] Dark/Light theme support.
 - [x] Location service integration.
 - [x] Auto-refresh functionality.
+- [x] Implementation of Elderly/Care Mode.
 
 ### Planned Features
 
 - [ ] Map integration for route visualization.
 - [ ] Improve internationalization using ARB gen-i10n.
 - [ ] Large screen adaptation optimization.
-- [ ] Implementation of Elderly/Care Mode.
 - [ ] Support for Traditional Chinese, Japanese, Korean.
 - [ ] Offline mode support.
 - [ ] Route planning.
