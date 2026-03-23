@@ -64,6 +64,17 @@ class _HomePageState extends State<HomePage> {
         return;
       }
 
+      final latitude = position.latitude;
+      final longitude = position.longitude;
+
+      if (latitude < 30.0 || latitude > 32.0 || longitude < 119.0 || longitude > 121.0) {
+        setState(() {
+          _errorMessage = AppLocalizations.of(context)!.locationNotInSuzhou;
+          _isLoading = false;
+        });
+        return;
+      }
+
       final result = await SuZhiBusAPI.queryNearbyStations(
         position.longitude,
         position.latitude,

@@ -83,6 +83,7 @@ class AppLocalizations {
       'careModeDescription': 'Larger fonts and higher contrast for better readability',
       'careModeEnabled': 'Care mode enabled',
       'careModeDisabled': 'Care mode disabled',
+      'locationNotInSuzhou': 'You are not currently in Suzhou',
     },
     'zh': {
       'appTitle': '苏智出行',
@@ -164,6 +165,7 @@ class AppLocalizations {
       'careModeDescription': '更大字号和更高对比度，提升可读性',
       'careModeEnabled': '关怀模式已启用',
       'careModeDisabled': '关怀模式已关闭',
+      'locationNotInSuzhou': '您当前的位置不在苏州',
     },
   };
 
@@ -261,6 +263,7 @@ class AppLocalizations {
   String get careModeDescription => _localizedValues[locale.languageCode]!['careModeDescription']!;
   String get careModeEnabled => _localizedValues[locale.languageCode]!['careModeEnabled']!;
   String get careModeDisabled => _localizedValues[locale.languageCode]!['careModeDisabled']!;
+  String get locationNotInSuzhou => _localizedValues[locale.languageCode]!['locationNotInSuzhou']!;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
