@@ -150,17 +150,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     children: [
                       Text(
                         localizations.careMode,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                       Text(
                         localizations.careModeDescription,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey,
+                            ),
                       ),
                     ],
                   ),
@@ -208,10 +204,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(width: 12),
                 Text(
                   localizations.theme,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
             ),
@@ -281,10 +274,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(width: 12),
                 Text(
                   localizations.language,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
             ),
@@ -338,10 +328,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(width: 12),
                 Text(
                   localizations.about,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
             ),
@@ -352,7 +339,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ListTile(
             title: Text(localizations.version),
-            subtitle: const Text('1.0.0 Beta 2'),
+            subtitle: const Text('1.0.0 Beta 3 - 2026/03/23'),
             leading: const Icon(Icons.tag, color: Colors.blue),
           ),
         ],

@@ -368,7 +368,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text(
                   _buildStationTitle(station),
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -382,10 +384,9 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(width: 4),
                       Text(
                         _buildWalkingTime(station.distance),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                            ),
                       ),
                       const SizedBox(width: 16),
                       Icon(
@@ -396,10 +397,9 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(width: 4),
                       Text(
                         '${localizations.distance}: ${station.distance?.toStringAsFixed(0) ?? 0} ${localizations.meters}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                            ),
                       ),
                     ],
                   ),
@@ -496,9 +496,9 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Text(
                 route.routeName,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
           ],
@@ -508,19 +508,17 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
               localizations.to,
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
             ),
             const SizedBox(width: 4),
             Expanded(
               child: Text(
                 route.endStation ?? localizations.notAvailable,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ),
           ],
@@ -537,11 +535,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Text(
                   '${localizations.firstBus}${route.startTime ?? ''}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.orange,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -553,11 +550,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Text(
                   '${localizations.lastBus}${route.endTime ?? ''}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.purple,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.purple,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],
@@ -570,12 +566,11 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              localizations.notOperatingToday,
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                localizations.notOperatingToday,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
               ),
-            ),
           ),
       ],
     );
@@ -659,51 +654,46 @@ class _HomePageState extends State<HomePage> {
       if (isBeforeStartTime) {
         return Text(
           localizations.notStarted,
-          style: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
         );
       }
       
       if (isAfterEndTime) {
         return Text(
           localizations.hasPassedLastDeparture,
-          style: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
         );
       }
       
       return Text(
         localizations.waitingForDeparture,
-        style: TextStyle(
-          fontSize: 12,
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-        ),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
       );
     }
 
     if (nearbyForecastStation == 0 && nearbyForecastDistance == 0 && predictArriveTime == 0) {
       return Text(
         localizations.busAtStation,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Colors.green,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
       );
     }
 
     if (nearbyForecastStation == 0) {
       return Text(
         localizations.arrivingSoon,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Colors.green,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
       );
     }
 
@@ -726,46 +716,41 @@ class _HomePageState extends State<HomePage> {
           child: Center(
             child: Text(
               '$busIndex',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
         ),
         const SizedBox(width: 8),
         Text(
           timeText,
-          style: TextStyle(
-            fontSize: 12,
-            color: busIndex == 1 ? Colors.green : Colors.purple,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: busIndex == 1 ? Colors.green : Colors.purple,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(width: 8),
         Text(
           '$nearbyForecastStation${localizations.stations}',
-          style: TextStyle(
-            fontSize: 12,
-            color: busIndex == 1 ? Colors.green : Colors.purple,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: busIndex == 1 ? Colors.green : Colors.purple,
+              ),
         ),
         const SizedBox(width: 4),
         Text(
           '/',
-          style: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+              ),
         ),
         const SizedBox(width: 4),
         Text(
           distanceText,
-          style: TextStyle(
-            fontSize: 12,
-            color: busIndex == 1 ? Colors.green : Colors.purple,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: busIndex == 1 ? Colors.green : Colors.purple,
+              ),
         ),
       ],
     );
