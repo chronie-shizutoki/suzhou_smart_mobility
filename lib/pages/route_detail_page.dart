@@ -38,7 +38,6 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
   Timer? _refreshTimer;
   final ScrollController _scrollController = ScrollController();
   bool _isRefreshing = false;
-  bool _hasTimeTable = true;
 
   @override
   void initState() {
@@ -86,7 +85,6 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
             _allRoutes = routeItems;
             _routeDetail = currentRoute;
             _isShowReverse = routeItems.length > 1;
-            _hasTimeTable = currentRoute.isShowTimetable ?? true;
             _stations = currentRoute.stations ?? [];
             
             if (_currentStationId.isEmpty && _stations.isNotEmpty) {
@@ -783,21 +781,6 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
         }
       } catch (e) {
       }
-    }
-
-    if (!_hasTimeTable) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
-        child: Center(
-          child: Text(
-            localizations.notOperatingToday,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-          ),
-        ),
-      );
     }
 
     if (isBeforeStartTime) {
