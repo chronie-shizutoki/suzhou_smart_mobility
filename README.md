@@ -31,7 +31,7 @@ Suzhou Smart Mobility is a modern application developed with Flutter, designed t
 - Japanese
 - Korean
 
-### 3. Care Mode (Planned)
+### 3. Care Mode
 - Elderly/Care Mode with larger fonts and a simplified interface.
 - Enhanced readability for all users.
 
