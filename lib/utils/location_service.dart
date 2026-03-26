@@ -1,10 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class LocationService {
-  static Future<bool> checkPermission() async {
-    final status = await Permission.location.request();
-    return status.isGranted;
+  static Future<LocationPermission> checkPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return LocationPermission.denied;
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      await Geolocator.openAppSettings();
+      return LocationPermission.deniedForever;
+    }
+    return permission;
   }
 
   static Future<bool> checkServiceEnabled() async {
@@ -17,8 +27,9 @@ class LocationService {
 
   static Future<Position?> getCurrentPosition() async {
     try {
-      final hasPermission = await checkPermission();
-      if (!hasPermission) {
+      final permission = await checkPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
         return null;
       }
 
@@ -28,24 +39,30 @@ class LocationService {
       }
 
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 15),
+        ),
       );
       return position;
     } catch (e) {
+      debugPrint('LocationService error: $e');
       return null;
     }
   }
 
   static Future<Position?> getLastKnownPosition() async {
     try {
-      final hasPermission = await checkPermission();
-      if (!hasPermission) {
+      final permission = await checkPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
         return null;
       }
 
       final position = await Geolocator.getLastKnownPosition();
       return position;
     } catch (e) {
+      debugPrint('LocationService getLastKnownPosition error: $e');
       return null;
     }
   }

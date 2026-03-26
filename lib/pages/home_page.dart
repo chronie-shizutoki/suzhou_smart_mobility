@@ -67,7 +67,21 @@ class _HomePageState extends State<HomePage> {
       final latitude = position.latitude;
       final longitude = position.longitude;
 
-      if (latitude < 30.0 || latitude > 32.0 || longitude < 119.0 || longitude > 121.0) {
+      // Debug: print actual coordinates
+      debugPrint('GPS Coordinates: lat=$latitude, lng=$longitude');
+
+      // More precise Suzhou geographical boundaries with some buffer
+      // Suzhou is roughly: 30.75°N to 32.1°N, 119.8°E to 121.3°E
+      const double suzhouMinLat = 30.7;
+      const double suzhouMaxLat = 32.2;
+      const double suzhouMinLng = 119.7;
+      const double suzhouMaxLng = 121.4;
+
+      debugPrint('Suzhou boundaries: lat[$suzhouMinLat-$suzhouMaxLat], lng[$suzhouMinLng-$suzhouMaxLng]');
+      debugPrint('Check: lat < min? ${latitude < suzhouMinLat}, lat > max? ${latitude > suzhouMaxLat}');
+      debugPrint('Check: lng < min? ${longitude < suzhouMinLng}, lng > max? ${longitude > suzhouMaxLng}');
+
+      if (latitude < suzhouMinLat || latitude > suzhouMaxLat || longitude < suzhouMinLng || longitude > suzhouMaxLng) {
         setState(() {
           _errorMessage = AppLocalizations.of(context)!.locationNotInSuzhou;
           _isLoading = false;
@@ -76,8 +90,8 @@ class _HomePageState extends State<HomePage> {
       }
 
       final result = await SuZhiBusAPI.queryNearbyStations(
-        position.longitude,
-        position.latitude,
+        longitude,
+        latitude,
         range: 800,
       );
 
@@ -125,11 +139,14 @@ class _HomePageState extends State<HomePage> {
         return;
       }
 
+      final latitude = position.latitude;
+      final longitude = position.longitude;
+
       final result = await SuZhiBusAPI.queryStationVehicles(
         station.stationId,
         SuZhiBusAPI.generateRequestId(),
-        longitude: position.longitude,
-        latitude: position.latitude,
+        longitude: longitude,
+        latitude: latitude,
       );
 
       if (result['status'] == true && result['items'] != null) {
