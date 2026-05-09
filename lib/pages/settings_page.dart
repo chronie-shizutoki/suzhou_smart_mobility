@@ -13,7 +13,8 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final SettingsManager _settingsManager = SettingsManager();
   ThemeMode _currentThemeMode = ThemeMode.system;
-  String _currentLanguage = 'en';
+  String _currentLanguage = 'zh';
+  String? _currentCountryCode;
   bool _careMode = false;
 
   @override
@@ -27,6 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       _currentThemeMode = _settingsManager.themeMode;
       _currentLanguage = _settingsManager.locale.languageCode;
+      _currentCountryCode = _settingsManager.locale.countryCode;
       _careMode = _settingsManager.careMode;
     });
   }
@@ -38,10 +40,11 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  Future<void> _changeLanguage(String language) async {
-    await _settingsManager.setLocale(Locale(language));
+  Future<void> _changeLanguage(String language, {String? countryCode}) async {
+    await _settingsManager.setLocale(Locale(language, countryCode));
     setState(() {
       _currentLanguage = language;
+      _currentCountryCode = countryCode;
     });
   }
 
@@ -280,9 +283,10 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           RadioListTile<String>(
-            title: const Text('English'),
+            title: Text(localizations.english),
             value: 'en',
             groupValue: _currentLanguage,
+            selected: _currentLanguage == 'en' && _currentCountryCode == null,
             onChanged: (value) {
               if (value != null) {
                 _changeLanguage(value);
@@ -290,9 +294,43 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
           RadioListTile<String>(
-            title: const Text('简体中文'),
+            title: Text(localizations.chineseSimplified),
             value: 'zh',
             groupValue: _currentLanguage,
+            selected: _currentLanguage == 'zh' && _currentCountryCode == null,
+            onChanged: (value) {
+              if (value != null) {
+                _changeLanguage(value);
+              }
+            },
+          ),
+          RadioListTile<String>(
+            title: Text(localizations.chineseTraditional),
+            value: 'zh_TW',
+            groupValue: _currentLanguage,
+            selected: _currentLanguage == 'zh' && _currentCountryCode == 'TW',
+            onChanged: (value) {
+              if (value != null) {
+                _changeLanguage('zh', countryCode: 'TW');
+              }
+            },
+          ),
+          RadioListTile<String>(
+            title: Text(localizations.japanese),
+            value: 'ja',
+            groupValue: _currentLanguage,
+            selected: _currentLanguage == 'ja' && _currentCountryCode == null,
+            onChanged: (value) {
+              if (value != null) {
+                _changeLanguage(value);
+              }
+            },
+          ),
+          RadioListTile<String>(
+            title: Text(localizations.korean),
+            value: 'ko',
+            groupValue: _currentLanguage,
+            selected: _currentLanguage == 'ko' && _currentCountryCode == null,
             onChanged: (value) {
               if (value != null) {
                 _changeLanguage(value);
@@ -339,7 +377,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ListTile(
             title: Text(localizations.version),
-            subtitle: const Text('1.0.0 Beta 6 - 2026/05/09'),
+            subtitle: Text('${localizations.appTitle} 1.0.0 Beta 7'),
             leading: const Icon(Icons.tag, color: Colors.blue),
           ),
         ],

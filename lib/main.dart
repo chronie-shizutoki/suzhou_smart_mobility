@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'theme/glass_theme.dart';
 import 'pages/home_page.dart';
@@ -55,23 +54,34 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         final careMode = _settingsManager.careMode;
         return MaterialApp(
-          title: 'Suzhou Smart Mobility',
+          title: _getAppTitle(),
           debugShowCheckedModeBanner: false,
           theme: careMode ? GlassTheme.lightThemeCareMode : GlassTheme.lightTheme,
           darkTheme: careMode ? GlassTheme.darkThemeCareMode : GlassTheme.darkTheme,
           themeMode: _settingsManager.themeMode,
           locale: _settingsManager.locale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: const MainNavigation(),
         );
       },
     );
+  }
+
+  String _getAppTitle() {
+    final locale = _settingsManager.locale;
+    switch ('${locale.languageCode}${locale.countryCode != null ? '_${locale.countryCode}' : ''}') {
+      case 'zh':
+        return '苏智出行';
+      case 'zh_TW':
+        return '蘇智出行';
+      case 'ja':
+        return '蘇州スマートモビリティ';
+      case 'ko':
+        return '수저 스마트 모빌리티';
+      default:
+        return 'Suzhou Smart Mobility';
+    }
   }
 }
 
@@ -90,7 +100,6 @@ class _MainNavigationState extends State<MainNavigation> {
     SettingsPage(),
   ];
 
-  final List<String> _navTitles = ['Home', 'Search', 'Settings'];
   final List<IconData> _navIcons = [
     Icons.home_outlined,
     Icons.search_outlined,
@@ -105,6 +114,8 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final localizations = AppLocalizations.of(context)!;
+    final navTitles = [localizations.home, localizations.search, localizations.settings];
 
     return Scaffold(
       body: IndexedStack(
@@ -119,7 +130,7 @@ class _MainNavigationState extends State<MainNavigation> {
             _currentIndex = index;
           });
         },
-        titles: _navTitles,
+        titles: navTitles,
         icons: _navIcons,
         activeIcons: _navActiveIcons,
         mode: NavBarMode.iconsOnly,
