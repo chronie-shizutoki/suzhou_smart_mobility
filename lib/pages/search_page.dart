@@ -5,6 +5,7 @@ import '../models/station.dart';
 import '../models/route.dart' as models;
 import '../utils/location_service.dart';
 import '../theme/glass_theme.dart';
+import '../widgets/liquid_slider_tab.dart';
 import 'route_detail_page.dart';
 import 'station_detail_page.dart';
 
@@ -15,26 +16,13 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _SearchPageState extends State<SearchPage> {
+  int _currentTabIndex = 0;
   final TextEditingController _searchController = TextEditingController();
   List<Station> _stations = [];
   List<models.BusRoute> _routes = [];
   bool _isLoading = false;
   String _errorMessage = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    _searchController.dispose();
-    super.dispose();
-  }
 
   Future<void> _searchStations() async {
     if (_searchController.text.isEmpty) return;
@@ -220,8 +208,8 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
               _buildSearchBar(context, localizations, isDark),
               _buildTabBar(context, localizations),
               Expanded(
-                child: TabBarView(
-                  controller: _tabController,
+                child: IndexedStack(
+                  index: _currentTabIndex,
                   children: [
                     _buildStationsTab(context, localizations, isDark),
                     _buildRoutesTab(context, localizations, isDark),
@@ -263,7 +251,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                   setState(() {});
                 },
                 onSubmitted: (_) {
-                  if (_tabController.index == 0) {
+                  if (_currentTabIndex == 0) {
                     _searchStations();
                   } else {
                     _searchRoutes();
@@ -281,7 +269,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
             child: IconButton(
               icon: const Icon(Icons.search, color: Colors.white),
               onPressed: () {
-                if (_tabController.index == 0) {
+                if (_currentTabIndex == 0) {
                   _searchStations();
                 } else {
                   _searchRoutes();
@@ -295,25 +283,25 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   }
 
   Widget _buildTabBar(BuildContext context, AppLocalizations localizations) {
+    final titles = [
+      localizations.searchStations ?? 'Stations',
+      localizations.routes ?? 'Routes',
+    ];
+    
+    final currentIndex = (_currentTabIndex ?? 0).clamp(0, titles.length - 1);
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          color: Colors.blue.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        indicatorSize: TabBarIndicatorSize.tab,
-        labelColor: Theme.of(context).colorScheme.primary,
-        unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-        tabs: [
-          Tab(text: localizations.searchStations),
-          Tab(text: localizations.routes),
-        ],
+      child: LiquidSliderTab(
+        currentIndex: currentIndex,
+        onIndexChanged: (index) {
+          setState(() {
+            _currentTabIndex = index;
+          });
+        },
+        titles: titles,
+        isDarkMode: Theme.of(context).brightness == Brightness.dark,
+        height: 52,
       ),
     );
   }

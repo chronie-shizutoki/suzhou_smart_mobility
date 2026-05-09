@@ -6,7 +6,7 @@ import 'pages/home_page.dart';
 import 'pages/search_page.dart';
 import 'pages/settings_page.dart';
 import 'utils/settings_manager.dart';
-import 'widgets/floating_navigation_bar.dart';
+import 'widgets/liquid_nav_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -90,21 +90,41 @@ class _MainNavigationState extends State<MainNavigation> {
     SettingsPage(),
   ];
 
+  final List<String> _navTitles = ['Home', 'Search', 'Settings'];
+  final List<IconData> _navIcons = [
+    Icons.home_outlined,
+    Icons.search_outlined,
+    Icons.settings_outlined,
+  ];
+  final List<IconData> _navActiveIcons = [
+    Icons.home,
+    Icons.search,
+    Icons.settings,
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingNavigationBar(
+      floatingActionButton: LiquidNavBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
+        onIndexChanged: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
+        titles: _navTitles,
+        icons: _navIcons,
+        activeIcons: _navActiveIcons,
+        mode: NavBarMode.iconsOnly,
+        isDarkMode: isDarkMode,
+        height: 60,
       ),
     );
   }
