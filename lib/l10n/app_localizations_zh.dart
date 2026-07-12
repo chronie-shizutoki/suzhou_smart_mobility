@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => '苏智出行';
+  String get appTitle => '智行苏州';
 
   @override
   String get home => '首页';
@@ -284,7 +284,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   AppLocalizationsZhTw() : super('zh_TW');
 
   @override
-  String get appTitle => '蘇智出行';
+  String get appTitle => '智行蘇州';
 
   @override
   String get home => '首頁';

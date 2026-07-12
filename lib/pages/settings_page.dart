@@ -377,7 +377,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ListTile(
             title: Text(localizations.version),
-            subtitle: Text('${localizations.appTitle} 1.0.0 Beta 7'),
+            subtitle: Text('${localizations.appTitle} 1.0.0 rc01'),
             leading: const Icon(Icons.tag, color: Colors.blue),
           ),
         ],

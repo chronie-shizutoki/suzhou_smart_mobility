@@ -219,43 +219,72 @@ class _LiquidThumb extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Outer shadow
+          // Soft ambient glow
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(height / 2),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  color: accentColor.withValues(alpha: isDragging ? 0.35 : 0.15),
+                  blurRadius: isDragging ? 28 : 20,
+                  spreadRadius: isDragging ? 3 : 1,
+                  offset: const Offset(0, 0),
                 ),
               ],
             ),
           ),
           
-          // Glass container
-          Container(
-            decoration: BoxDecoration(
-              color: isDarkMode 
-                  ? Colors.white.withValues(alpha: 0.9 - (isDragging ? 0.3 : 0))
-                  : Colors.white.withValues(alpha: 0.95 - (isDragging ? 0.3 : 0)),
-              borderRadius: BorderRadius.circular(height / 2),
-              border: Border.all(
-                color: isDarkMode 
-                    ? Colors.white.withValues(alpha: 0.3)
-                    : accentColor.withValues(alpha: 0.2),
-                width: 1,
+          // High quality glass container
+          ClipRRect(
+            borderRadius: BorderRadius.circular(height / 2),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: isDragging ? 20 : 14,
+                sigmaY: isDragging ? 20 : 14,
               ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(height / 2),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: isDragging ? 4 : 8,
-                  sigmaY: isDragging ? 4 : 8,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isDarkMode 
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(height / 2),
+                  border: Border.all(
+                    color: isDarkMode 
+                        ? Colors.white.withValues(alpha: 0.15)
+                        : Colors.white.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: const [0.0, 0.5, 1.0],
+                    colors: [
+                      isDarkMode 
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.white.withValues(alpha: 0.15),
+                      isDarkMode 
+                          ? Colors.transparent
+                          : Colors.white.withValues(alpha: 0.08),
+                      isDarkMode 
+                          ? Colors.black.withValues(alpha: 0.06)
+                          : Colors.black.withValues(alpha: 0.03),
+                    ],
+                  ),
                 ),
                 child: Container(
-                  color: accentColor.withValues(alpha: 0.1),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      stops: const [0.0, 0.4, 1.0],
+                      colors: [
+                        accentColor.withValues(alpha: isDragging ? 0.25 : 0.15),
+                        accentColor.withValues(alpha: isDragging ? 0.12 : 0.06),
+                        accentColor.withValues(alpha: 0.02),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(height / 2),
+                  ),
                   child: Stack(
                     children: [
                       // Inner highlight
@@ -270,7 +299,7 @@ class _LiquidThumb extends StatelessWidget {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                Colors.white.withValues(alpha: isDragging ? 0.8 : 0.5),
+                                Colors.white.withValues(alpha: isDragging ? 0.3 : 0.15),
                                 Colors.transparent,
                               ],
                             ),
@@ -287,11 +316,11 @@ class _LiquidThumb extends StatelessWidget {
                           width: width * 0.6,
                           height: height * 0.6,
                           decoration: BoxDecoration(
-                            color: accentColor.withValues(alpha: isDragging ? 0.8 : 0.4),
+                            color: accentColor.withValues(alpha: isDragging ? 0.4 : 0.2),
                             borderRadius: BorderRadius.circular(height * 0.3),
                             boxShadow: [
                               BoxShadow(
-                                color: accentColor.withValues(alpha: 0.3),
+                                color: accentColor.withValues(alpha: 0.15),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
@@ -308,7 +337,7 @@ class _LiquidThumb extends StatelessWidget {
                               borderRadius: BorderRadius.circular(height / 2),
                               boxShadow: [
                                 BoxShadow(
-                                  color: accentColor.withValues(alpha: 0.4),
+                                  color: accentColor.withValues(alpha: 0.2),
                                   blurRadius: 20,
                                   offset: const Offset(0, 0),
                                 ),
@@ -323,14 +352,38 @@ class _LiquidThumb extends StatelessWidget {
             ),
           ),
           
-          // Inner shadow
+          // Inner highlight
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(height / 2),
+              border: Border.all(
+                color: isDarkMode 
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : Colors.white.withValues(alpha: 0.18),
+                width: 0.5,
+              ),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0.0, 0.2],
+                colors: [
+                  isDarkMode 
+                      ? Colors.white.withValues(alpha: 0.2)
+                      : Colors.white.withValues(alpha: 0.3),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+          
+          // Subtle inner shadow
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(height / 2),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: isDragging ? 0.2 : 0.05),
-                  blurRadius: isDragging ? 8 : 4,
+                  color: Colors.black.withValues(alpha: isDragging ? 0.12 : 0.06),
+                  blurRadius: isDragging ? 6 : 3,
                   offset: const Offset(0, 2),
                   blurStyle: BlurStyle.inner,
                 ),

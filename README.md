@@ -24,7 +24,7 @@ Suzhou Smart Mobility is a modern application developed with Flutter, designed t
 - Independent application with complete functionality.
 - Focus on privacy protection.
 
-### 2. Multi-language Support (Incomplete)
+### 2. Multi-language Support
 - Simplified Chinese
 - Traditional Chinese
 - English
@@ -363,13 +363,13 @@ final decrypted = DecryptUtil.decryptResponseToJson(response);
 - [x] Location service integration.
 - [x] Auto-refresh functionality.
 - [x] Implementation of Elderly/Care Mode.
+- [x] Improve internationalization using ARB gen-i10n.
+- [x] Support for Traditional Chinese, Japanese, Korean.
 
 ### Planned Features
 
 - [ ] Map integration for route visualization.
-- [ ] Improve internationalization using ARB gen-i10n.
 - [ ] Large screen adaptation optimization.
-- [ ] Support for Traditional Chinese, Japanese, Korean.
 - [ ] Offline mode support.
 - [ ] Route planning.
 - [ ] Favorites management.
