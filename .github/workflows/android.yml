@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'flutter_app/**'
+      - './**'
       - '.github/workflows/android.yml'
 jobs:
   build:
@@ -23,30 +23,30 @@ jobs:
         run: flutter --version
       - name: Install dependencies
         run: flutter pub get
-        working-directory: flutter_app
+        working-directory: ./
       - name: Override Gradle wrapper for CI
-        run: sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-9.5.1-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
-        working-directory: flutter_app
+        run: sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-9.6.1-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
+        working-directory: ./
       - name: Build release APK
         run: flutter build apk --release --split-per-abi
-        working-directory: flutter_app
+        working-directory: ./
       - name: Upload APK artifact (arm64-v8a)
         uses: actions/upload-artifact@v7
         with:
           name: app-arm64-v8a-release
-          path: flutter_app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          path: ./build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
       - name: Upload APK artifact (armeabi-v7a)
         uses: actions/upload-artifact@v7
         with:
           name: app-armeabi-v7a-release
-          path: flutter_app/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          path: ./build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
       - name: Upload APK artifact (x86_64)
         uses: actions/upload-artifact@v7
         with:
           name: app-x86_64-release
-          path: flutter_app/build/app/outputs/flutter-apk/app-x86_64-release.apk
+          path: ./build/app/outputs/flutter-apk/app-x86_64-release.apk
       - name: Upload APK output-metadata
         uses: actions/upload-artifact@v7
         with:
           name: metadata
-          path: flutter_app/build/app/outputs/flutter-apk/output-metadata.json
+          path: ./build/app/outputs/flutter-apk/output-metadata.json
