@@ -257,7 +257,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
     }
 
     final timeText = predictArriveTime != null && predictArriveTime > 0
-        ? '${predictArriveTime}${localizations.minutes}'
+        ? '$predictArriveTime${localizations.minutes}'
         : '1${localizations.withinMinutes}';
     final distanceText = nearbyForecastDistance != null && nearbyForecastDistance > 0
         ? '${(nearbyForecastDistance / 1000).toStringAsFixed(1)}km'

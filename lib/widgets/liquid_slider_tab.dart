@@ -6,6 +6,7 @@ class LiquidSliderTab extends StatefulWidget {
   final ValueChanged<int> onIndexChanged;
   final List<String> titles;
   final bool isDarkMode;
+  final double height;
 
   const LiquidSliderTab({
     super.key,
@@ -13,6 +14,7 @@ class LiquidSliderTab extends StatefulWidget {
     required this.onIndexChanged,
     required this.titles,
     required this.isDarkMode,
+    this.height = 52,
   });
 
   @override
@@ -102,7 +104,9 @@ class _LiquidSliderTabState extends State<LiquidSliderTab>
           _thumbPosition = itemWidth * widget.currentIndex + itemWidth / 2;
         }
 
-        return Stack(
+        return SizedBox(
+          height: widget.height,
+          child: Stack(
           clipBehavior: Clip.none,
           children: [
             // 阴影层
@@ -221,6 +225,7 @@ class _LiquidSliderTabState extends State<LiquidSliderTab>
               ),
             ),
           ],
+        ),
         );
       },
     );

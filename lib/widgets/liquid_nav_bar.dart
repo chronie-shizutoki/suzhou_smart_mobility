@@ -14,6 +14,7 @@ class LiquidNavBar extends StatefulWidget {
   final List<IconData> activeIcons;
   final NavBarMode mode;
   final bool isDarkMode;
+  final double height;
 
   const LiquidNavBar({
     super.key,
@@ -24,6 +25,7 @@ class LiquidNavBar extends StatefulWidget {
     required this.activeIcons,
     this.mode = NavBarMode.iconsOnly,
     required this.isDarkMode,
+    this.height = 60,
   });
 
   @override
@@ -176,6 +178,7 @@ class _LiquidNavBarState extends State<LiquidNavBar>
                 sigmaY: 16,
               ),
               child: Container(
+                height: widget.height,
                 padding: widget.mode == NavBarMode.iconsOnly
                     ? const EdgeInsets.symmetric(horizontal: 4, vertical: 4)
                     : const EdgeInsets.symmetric(horizontal: 8, vertical: 8),

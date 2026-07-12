@@ -72,9 +72,9 @@ class _MyAppState extends State<MyApp> {
     final locale = _settingsManager.locale;
     switch ('${locale.languageCode}${locale.countryCode != null ? '_${locale.countryCode}' : ''}') {
       case 'zh':
-        return '苏智出行';
+        return '智行苏州';
       case 'zh_TW':
-        return '蘇智出行';
+        return '智行蘇州';
       case 'ja':
         return '蘇州スマートモビリティ';
       case 'ko':

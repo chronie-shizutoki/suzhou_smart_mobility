@@ -17,10 +17,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Station> _nearbyStations = [];
-  Map<String, List<models.BusRoute>> _stationRoutes = {};
-  Map<String, String> _stationErrors = {};
+  final Map<String, List<models.BusRoute>> _stationRoutes = {};
+  final Map<String, String> _stationErrors = {};
   bool _isLoading = false;
-  bool _isLoadingRoutes = false;
+  final bool _isLoadingRoutes = false;
   String _errorMessage = '';
   String? _expandedStationId;
   static const int _defaultExpandedCount = 4;
@@ -726,7 +726,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final timeText = predictArriveTime != null && predictArriveTime > 0
-        ? '${predictArriveTime}${localizations.minutes}'
+        ? '$predictArriveTime${localizations.minutes}'
         : '1${localizations.withinMinutes}';
     final distanceText = nearbyForecastDistance != null && nearbyForecastDistance > 0
         ? '${(nearbyForecastDistance / 1000).toStringAsFixed(1)}km'
