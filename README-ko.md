@@ -6,6 +6,25 @@
 
 쑤즈 출행은 Flutter로 개발된 현대적인 애플리케이션으로, 사용자가 쑤저우 공공 교통 시스템을 효율적으로 이용할 수 있도록 설계되었습니다. 이 앱은 실시간 버스 도착 예측, 노선 상세 정보, 정류장 정보 및 포괄적인 검색 기능을 제공합니다.
 
+## Screenshot
+<table>
+  <tr>
+    <!-- Light mode -->
+    <td><img src="https://github.com/user-attachments/assets/1397f3f0-dabc-4ba7-899e-2d35d2ab56b6" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/bba2bf2c-e95e-4182-9404-14614e103c80" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/8c9d998a-19de-4e48-9a7c-3ae3ba04b5c5" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/90cd6058-1105-4372-a860-daff1fa48412" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/be05d83d-06c4-4231-a8e6-f1f5417de1c6" width="120" /></td>
+  </tr>
+    <!-- Dark mode -->
+    <td><img src="https://github.com/user-attachments/assets/786a792c-af5a-461a-8656-2df49586a238" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/3d61e093-488b-4210-b05f-e523a8436fc9" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/9c2f8952-2d73-4b51-adb1-bad96d238590" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/2e045da8-749f-4221-bc5f-239e2bfe2c72" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/5d501529-0840-4258-945b-3d5c207dfdd6" width="120" /></td>
+  </tr>
+</table>
+
 ### 핵심 기능
 
 - **실시간 버스 추적**: 근처 정류장의 정확한 도착 시간을 확인합니다.
