@@ -6,6 +6,25 @@
 
 智行蘇州是一款基於 Flutter 開發的現代化應用，旨在幫助用戶高效地使用蘇州公共交通系統。該應用提供即時公交到站預測、線路詳情、站點資訊和全面的搜尋功能。
 
+## 螢幕截圖
+<table>
+  <tr>
+    <!-- Light mode -->
+    <td><img src="https://github.com/user-attachments/assets/eeb7e94f-e851-4a7f-aa54-689ef4507167" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/8fb23bb9-8653-4bad-bd3f-3a18f0d7eef2" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/bc20ad3a-cb5c-4629-9d9b-ea25bcb3131f" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/d3ae47c2-70de-4223-b302-f3fa3ea60d61" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/52dc80e4-4d84-4682-8d8d-d719f790e3d7" width="120" /></td>
+  </tr>
+    <!-- Dark mode -->
+    <td><img src="https://github.com/user-attachments/assets/8cb3ed85-3d49-42f7-aa21-7deda81197cc" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/e9fb32e7-49ae-4968-8e67-288d1e246250" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/b165072f-f9fc-4e5f-91a4-3ee43c995329" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/21c4367c-4531-4cc3-adf9-99f5550a0604" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/be32135e-1945-456a-910f-e9ad263a289d" width="120" /></td>
+  </tr>
+</table>
+
 ### 核心功能
 
 - **即時公交追蹤**：獲取附近站點的準確到站時間
