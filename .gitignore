@@ -46,3 +46,10 @@ app.*.map.json
 
 # Gradle
 gradle-*.zip
+
+# Android signing (keep your keystore + credentials out of git)
+/android/key.properties
+*.jks
+*.keystore
+**/*.jks
+**/*.keystore
