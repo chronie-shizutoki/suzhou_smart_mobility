@@ -6,6 +6,26 @@
 
 智行苏州是一款基于 Flutter 开发的现代化应用，旨在帮助用户高效地使用苏州公共交通系统。该应用提供实时公交到站预测、线路详情、站点信息和全面的搜索功能。
 
+## 应用截图
+<table>
+  <tr>
+    <!-- 浅色模式 -->
+    <td><img src="https://github.com/user-attachments/assets/cfbae839-e0be-4480-a5ff-81bef9b1a8a1" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/de40608f-ecaa-4d11-b435-99bee2e55007" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/ed59decb-1f0e-4e4e-a553-757309277b7b" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/9ddc8909-fb7a-4633-989c-9ba5f305a54f" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/a00c3d80-f45a-4808-942e-68ae56a3da52" width="120" /></td>
+  </tr>
+  <tr>
+    <!-- 深色模式 -->
+    <td><img src="https://github.com/user-attachments/assets/9b68c8b6-28be-4049-8d35-a1e81a44efaa" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/bcf3c999-0a86-4ed4-93f0-ebc848ba3987" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/e89b6eea-3ab4-41eb-80d2-8b6dfada1783" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/4438f1ea-9c66-4bfb-aac3-e5ddaa2b219d" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/f33ee0db-dc60-4aab-9004-31e4896a13a5" width="120" /></td>
+  </tr>
+</table>
+
 ### 核心功能
 
 - **实时公交追踪**：获取附近站点的准确到站时间
