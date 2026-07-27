@@ -9,6 +9,26 @@ A cross-platform smart bus application for Suzhou, providing real-time bus track
 
 Suzhou Smart Mobility is a modern application developed with Flutter, designed to help users efficiently utilize Suzhou's public transportation system. The app provides real-time bus arrival predictions, route details, stop information, and comprehensive search functionality.
 
+## Screenshot
+<table>
+  <tr>
+    <!-- Light mode -->
+    <td><img src="https://github.com/user-attachments/assets/1397f3f0-dabc-4ba7-899e-2d35d2ab56b6" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/bba2bf2c-e95e-4182-9404-14614e103c80" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/8c9d998a-19de-4e48-9a7c-3ae3ba04b5c5" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/90cd6058-1105-4372-a860-daff1fa48412" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/be05d83d-06c4-4231-a8e6-f1f5417de1c6" width="120" /></td>
+  </tr>
+    <!-- Dark mode -->
+    <td><img src="https://github.com/user-attachments/assets/786a792c-af5a-461a-8656-2df49586a238" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/3d61e093-488b-4210-b05f-e523a8436fc9" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/9c2f8952-2d73-4b51-adb1-bad96d238590" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/2e045da8-749f-4221-bc5f-239e2bfe2c72" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/5d501529-0840-4258-945b-3d5c207dfdd6" width="120" /></td>
+  </tr>
+
+</table>
+
 ### Core Features
 
 - **Real-time Bus Tracking**: Get accurate arrival times for nearby stops.
