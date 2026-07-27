@@ -255,13 +255,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chineseSimplified => '简体中文';
 
   @override
-  String get chineseTraditional => '繁體中文';
+  String get chineseTraditional => '繁体中文';
 
   @override
-  String get japanese => '日本語';
+  String get japanese => '日语';
 
   @override
-  String get korean => '한국어';
+  String get korean => '韩语';
 
   @override
   String get cancel => '取消';
@@ -282,7 +282,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fontScale => '字号';
 
   @override
-  String get chineseHongKong => '繁體中文（香港）';
+  String get chineseHongKong => '繁体中文（香港）';
 }
 
 /// The translations for Chinese, as used in Hong Kong (`zh_HK`).
@@ -533,16 +533,16 @@ class AppLocalizationsZhHk extends AppLocalizationsZh {
   String get english => 'English';
 
   @override
-  String get chineseSimplified => '简体中文';
+  String get chineseSimplified => '簡體中文';
 
   @override
   String get chineseTraditional => '繁體中文';
 
   @override
-  String get japanese => '日本語';
+  String get japanese => '日文';
 
   @override
-  String get korean => '한국어';
+  String get korean => '韓文';
 
   @override
   String get cancel => '取消';
@@ -814,16 +814,16 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get english => 'English';
 
   @override
-  String get chineseSimplified => '简体中文';
+  String get chineseSimplified => '簡體中文';
 
   @override
   String get chineseTraditional => '繁體中文';
 
   @override
-  String get japanese => '日本語';
+  String get japanese => '日文';
 
   @override
-  String get korean => '한국어';
+  String get korean => '韓文';
 
   @override
   String get cancel => '取消';

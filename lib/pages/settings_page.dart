@@ -251,17 +251,26 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildThemeSection(BuildContext context, AppLocalizations localizations, bool isDark) {
     return GlassContainer(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionIcon(Icons.palette, Colors.blue),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              localizations.theme,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+          Row(
+            children: [
+              _buildSectionIcon(Icons.palette, Colors.blue),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  localizations.theme,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+            ],
           ),
-          _buildThemeDropdown(context, localizations, isDark),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _buildThemeDropdown(context, localizations, isDark),
+          ),
         ],
       ),
     );
@@ -305,23 +314,78 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildLanguageSection(BuildContext context, AppLocalizations localizations, bool isDark) {
     return GlassContainer(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionIcon(Icons.language, Colors.teal),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              localizations.language,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+          Row(
+            children: [
+              _buildSectionIcon(Icons.language, Colors.teal),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  localizations.language,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+            ],
           ),
-          _buildLanguageDropdown(context, localizations, isDark),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _buildLanguageDropdown(context, localizations, isDark),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildLanguageDropdown(BuildContext context, AppLocalizations localizations, bool isDark) {
+    // Native (local) names, shown next to the translated label so users
+    // can recognise each language even when the UI is in another tongue.
+    const nativeNames = <String, String>{
+      'zh': '简体中文',
+      'zh_TW': '繁體中文',
+      'zh_HK': '繁體中文（香港）',
+      'en': 'English',
+      'ja': '日本語',
+      'ko': '한국어',
+    };
+    // Translated labels in the current UI language.
+    final translatedNames = <String, String>{
+      'zh': localizations.chineseSimplified,
+      'zh_TW': localizations.chineseTraditional,
+      'zh_HK': localizations.chineseHongKong,
+      'en': localizations.english,
+      'ja': localizations.japanese,
+      'ko': localizations.korean,
+    };
+    // The user's current language value (e.g. 'zh', 'zh_TW').
+    final currentValue = _languageValue;
+
+    // Show the native name, plus the translated name in parentheses
+    // when it differs from the UI language.
+    Text labelFor(String value) {
+      final native = nativeNames[value]!;
+      final translated = translatedNames[value]!;
+      if (value == currentValue || native == translated) {
+        return Text(native);
+      }
+      return Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(text: native),
+            TextSpan(
+              text: ' ($translated)',
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return _buildDropdownShell(
       isDark: isDark,
       child: DropdownButton<String>(
@@ -334,30 +398,12 @@ class _SettingsPageState extends State<SettingsPage> {
         icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.blue),
         underline: const SizedBox.shrink(),
         items: [
-          DropdownMenuItem(
-            value: 'zh',
-            child: Text(localizations.chineseSimplified),
-          ),
-          DropdownMenuItem(
-            value: 'zh_TW',
-            child: Text(localizations.chineseTraditional),
-          ),
-          DropdownMenuItem(
-            value: 'zh_HK',
-            child: Text(localizations.chineseHongKong),
-          ),
-          DropdownMenuItem(
-            value: 'en',
-            child: Text(localizations.english),
-          ),
-          DropdownMenuItem(
-            value: 'ja',
-            child: Text(localizations.japanese),
-          ),
-          DropdownMenuItem(
-            value: 'ko',
-            child: Text(localizations.korean),
-          ),
+          DropdownMenuItem(value: 'zh', child: labelFor('zh')),
+          DropdownMenuItem(value: 'zh_TW', child: labelFor('zh_TW')),
+          DropdownMenuItem(value: 'zh_HK', child: labelFor('zh_HK')),
+          DropdownMenuItem(value: 'en', child: labelFor('en')),
+          DropdownMenuItem(value: 'ja', child: labelFor('ja')),
+          DropdownMenuItem(value: 'ko', child: labelFor('ko')),
         ],
         onChanged: (value) {
           if (value == null) return;

@@ -593,25 +593,25 @@ abstract class AppLocalizations {
   /// No description provided for @chineseSimplified.
   ///
   /// In en, this message translates to:
-  /// **'简体中文'**
+  /// **'Simplified Chinese'**
   String get chineseSimplified;
 
   /// No description provided for @chineseTraditional.
   ///
   /// In en, this message translates to:
-  /// **'繁體中文'**
+  /// **'Traditional Chinese'**
   String get chineseTraditional;
 
   /// No description provided for @japanese.
   ///
   /// In en, this message translates to:
-  /// **'日本語'**
+  /// **'Japanese'**
   String get japanese;
 
   /// No description provided for @korean.
   ///
   /// In en, this message translates to:
-  /// **'한국어'**
+  /// **'korean'**
   String get korean;
 
   /// No description provided for @cancel.

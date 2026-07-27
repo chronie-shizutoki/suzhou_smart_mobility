@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Rounded-square brand background (app primary blue). -->
+    <path
+        android:fillColor="#1E88E3"
+        android:pathData="M 96,0 L 416,0 Q 512,0 512,96 L 512,416 Q 512,512 416,512 L 96,512 Q 0,512 0,416 L 0,96 Q 0,0 96,0 Z" />
+
+    <!-- Bus body (white). -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 110,256 L 110,156 C 110,86 402,86 402,156 L 402,256 L 402,426 L 110,426 Z" />
+
+    <!-- Side mirrors (white). -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 70,228.5 A 22.5,22.5 0 1 0 115,228.5 A 22.5,22.5 0 1 0 70,228.5 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 397,228.5 A 22.5,22.5 0 1 0 442,228.5 A 22.5,22.5 0 1 0 397,228.5 Z" />
+
+    <!-- Wheels / supports (white). -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 150,426 L 170,426 Q 185,426 185,441 L 185,471 Q 185,486 170,486 L 150,486 Q 135,486 135,471 L 135,441 Q 135,426 150,426 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 342,426 L 362,426 Q 377,426 377,441 L 377,471 Q 377,486 362,486 L 342,486 Q 327,486 327,471 L 327,441 Q 327,426 342,426 Z" />
+
+    <!-- Cutouts (same blue as background) to reveal the bus windows and lights. -->
+    <path
+        android:fillColor="#1E88E3"
+        android:pathData="M 185,141 L 327,141 Q 332,141 332,146 L 332,164 Q 332,169 327,169 L 185,169 Q 180,169 180,164 L 180,146 Q 180,141 185,141 Z" />
+    <path
+        android:fillColor="#1E88E3"
+        android:pathData="M 150,191 L 362,191 Q 367,191 367,196 L 367,301 Q 367,306 362,306 L 150,306 Q 145,306 145,301 L 145,196 Q 145,191 150,191 Z" />
+    <path
+        android:fillColor="#1E88E3"
+        android:pathData="M 132,371 A 28,28 0 1 0 188,371 A 28,28 0 1 0 132,371 Z" />
+    <path
+        android:fillColor="#1E88E3"
+        android:pathData="M 324,371 A 28,28 0 1 0 380,371 A 28,28 0 1 0 324,371 Z" />
+</vector>

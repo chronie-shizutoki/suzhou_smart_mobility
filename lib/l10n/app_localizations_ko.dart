@@ -252,13 +252,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get english => 'English';
 
   @override
-  String get chineseSimplified => '简体中文';
+  String get chineseSimplified => '간체 중국어';
 
   @override
-  String get chineseTraditional => '繁體中文';
+  String get chineseTraditional => '번체 중국어';
 
   @override
-  String get japanese => '日本語';
+  String get japanese => '일본어';
 
   @override
   String get korean => '한국어';

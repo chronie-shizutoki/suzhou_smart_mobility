@@ -82,14 +82,14 @@
   "locationNotInSuzhou": "您当前的位置不在苏州",
   "english": "English",
   "chineseSimplified": "简体中文",
-  "chineseTraditional": "繁體中文",
-  "japanese": "日本語",
-  "korean": "한국어",
+  "chineseTraditional": "繁体中文",
+  "japanese": "日语",
+  "korean": "韩语",
   "cancel": "取消",
   "confirm": "确认",
   "ok": "确定",
   "yes": "是",
   "no": "否",
   "fontScale": "字号",
-  "chineseHongKong": "繁體中文（香港）"
+  "chineseHongKong": "繁体中文（香港）"
 }

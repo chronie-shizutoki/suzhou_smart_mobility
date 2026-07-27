@@ -254,16 +254,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get english => 'English';
 
   @override
-  String get chineseSimplified => '简体中文';
+  String get chineseSimplified => 'Simplified Chinese';
 
   @override
-  String get chineseTraditional => '繁體中文';
+  String get chineseTraditional => 'Traditional Chinese';
 
   @override
-  String get japanese => '日本語';
+  String get japanese => 'Japanese';
 
   @override
-  String get korean => '한국어';
+  String get korean => 'korean';
 
   @override
   String get cancel => 'Cancel';

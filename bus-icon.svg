@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- 使用 Mask 来抠出车身镂空部分（车窗、车灯），使背景完全透明 -->
+    <mask id="bus-mask">
+      <!-- 将画布初始化为黑色（透明/隐藏） -->
+      <rect width="512" height="512" fill="black" />
+      
+      <!-- 将公交车主体及附件用白色填充（显示为黑色） -->
+      <!-- 公交车主体车身 -->
+      <path d="M 110,256 L 110,156 C 110,86, 402,86, 402,156 L 402,256 L 402,426 L 110,426 Z" fill="white" />
+      
+      <!-- 左右后视镜 -->
+      <rect x="70" y="206" width="45" height="45" rx="22.5" fill="white" />
+      <rect x="397" y="206" width="45" height="45" rx="22.5" fill="white" />
+      
+      <!-- 下方左右车胎/支柱 -->
+      <rect x="135" y="426" width="50" height="60" rx="15" fill="white" />
+      <rect x="327" y="426" width="50" height="60" rx="15" fill="white" />
+      
+      <!-- 用黑色抠出空白区域（镂空效果） -->
+      <!-- 顶部显示牌 -->
+      <rect x="180" y="141" width="152" height="28" rx="5" fill="black" />
+      
+      <!-- 前挡风玻璃 -->
+      <rect x="145" y="191" width="222" height="115" rx="5" fill="black" />
+      
+      <!-- 左右大灯 -->
+      <circle cx="160" cy="371" r="28" fill="black" />
+      <circle cx="352" cy="371" r="28" fill="black" />
+    </mask>
+  </defs>
+  
+  <!-- 应用遮罩绘制纯黑色公交车剪影 -->
+  <rect width="512" height="512" fill="#000000" mask="url(#bus-mask)" />
+</svg>

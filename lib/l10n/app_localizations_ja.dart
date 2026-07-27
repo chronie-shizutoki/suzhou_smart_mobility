@@ -252,16 +252,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get english => 'English';
 
   @override
-  String get chineseSimplified => '简体中文';
+  String get chineseSimplified => '中国語（簡体字）';
 
   @override
-  String get chineseTraditional => '繁體中文';
+  String get chineseTraditional => '中国語（繁体字）';
 
   @override
   String get japanese => '日本語';
 
   @override
-  String get korean => '한국어';
+  String get korean => '韓国語';
 
   @override
   String get cancel => 'キャンセル';
@@ -282,5 +282,5 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fontScale => 'フォントサイズ';
 
   @override
-  String get chineseHongKong => '繁體中文（香港）';
+  String get chineseHongKong => '中国語（繁体字、香港）';
 }

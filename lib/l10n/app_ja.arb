@@ -81,15 +81,15 @@
   "careModeDisabled": "ケアモードが無効",
   "locationNotInSuzhou": "現在の位置は蘇州ではありません",
   "english": "English",
-  "chineseSimplified": "简体中文",
-  "chineseTraditional": "繁體中文",
+  "chineseSimplified": "中国語（簡体字）",
+  "chineseTraditional": "中国語（繁体字）",
   "japanese": "日本語",
-  "korean": "한국어",
+  "korean": "韓国語",
   "cancel": "キャンセル",
   "confirm": "確認",
   "ok": "OK",
   "yes": "はい",
   "no": "いいえ",
   "fontScale": "フォントサイズ",
-  "chineseHongKong": "繁體中文（香港）"
+  "chineseHongKong": "中国語（繁体字、香港）"
 }
