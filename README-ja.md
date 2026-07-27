@@ -6,6 +6,25 @@
 
 蘇州スマートモビリティはFlutterで開発されたモダンなアプリケーションで、ユーザーが蘇州市の公共交通システムを効率的に利用できるように設計されています。このアプリは、リアルタイムのバス到着予測、路線の詳細情報、停留所情報、および包括的な検索機能を提供します。
 
+## スクリーンショット
+<table>
+  <tr>
+    <!-- Light mode -->
+    <td><img src="https://github.com/user-attachments/assets/8cd4a637-4f7a-4899-b977-83b22d39ac83" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/b2c66e16-986a-4fa5-902b-2d040f2659fe" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/2d6f82f3-d7cc-4914-a00f-c49d7cb6db6d" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/feee5cb5-0826-40c2-9e54-440844aee609" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/fff9defc-0235-45fa-a2dd-6161709b661d" width="120" /></td>
+  </tr>
+    <!-- Dark mode -->
+    <td><img src="https://github.com/user-attachments/assets/f04949da-d5d5-4d17-b56c-ab78400d5ece" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/c9fbde2f-b34a-47c9-a30f-43b34c7f6b8e" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/4fd4d325-2fc7-462d-9f99-b3908271d60a" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/b822d0f6-9ee9-4ce5-a3b0-fb009fa8878e" width="120" /></td>
+    <td><img src="https://github.com/user-attachments/assets/1b902621-6678-477f-85ce-23d220c1ac35" width="120" /></td>
+  </tr>
+</table>
+
 ### コア機能
 
 - **リアルタイムバス追跡**: 近くの停留所の正確な到着時間を取得します。
