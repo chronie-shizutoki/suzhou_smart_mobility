@@ -58,6 +58,9 @@ dependencies:
   # Chinese character conversion
   flutter_open_chinese_convert: ^0.9.0
 
+  # Chinese pinyin generation (for translated name display)
+  lpinyin: ^2.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -82,6 +85,14 @@ flutter:
 
   # Enable gen-i10n for internationalization
   generate: true
+
+  # Translation dictionaries for station / route names (one file per language).
+  # Keyed by the Simplified-Chinese name; value is the translation.
+  # Maintained manually; currently empty.
+  assets:
+    - assets/i18n/names_en.json
+    - assets/i18n/names_ja.json
+    - assets/i18n/names_ko.json
 
 flutter_intl:
   enabled: true

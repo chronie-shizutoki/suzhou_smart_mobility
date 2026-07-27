@@ -6,6 +6,8 @@ import '../models/route.dart' as models;
 import '../utils/location_service.dart';
 import '../theme/glass_theme.dart';
 import '../utils/zh_converter.dart';
+import '../utils/name_localizer.dart';
+import 'package:flutter_open_chinese_convert/flutter_open_chinese_convert.dart';
 import '../widgets/liquid_slider_tab.dart';
 import 'route_detail_page.dart';
 import 'station_detail_page.dart';
@@ -40,21 +42,34 @@ class _SearchPageState extends State<SearchPage> {
     });
 
     try {
-      final result = await SuZhiBusAPI.searchStations(_searchController.text);
-
-      if (result['status'] == true && result['items'] != null) {
+      final queries = await _resolveChineseQueries(_searchController.text.trim());
+      if (queries.isEmpty) {
         setState(() {
-          _stations = (result['items'] as List)
-              .map((e) => Station.fromJson(e as Map<String, dynamic>))
-              .toList();
+          _stations = [];
           _isLoading = false;
         });
-      } else {
-        setState(() {
-          _errorMessage = result['msg']?.toString() ?? AppLocalizations.of(context)!.unknownError;
-          _isLoading = false;
-        });
+        return;
       }
+
+      final Map<String, Station> merged = {};
+      String? lastMsg;
+      for (final q in queries) {
+        final result = await SuZhiBusAPI.searchStations(q);
+        if (result['status'] == true && result['items'] != null) {
+          for (final e in (result['items'] as List)) {
+            final station = Station.fromJson(e as Map<String, dynamic>);
+            merged[station.stationId] = station;
+          }
+        } else {
+          lastMsg = result['msg']?.toString();
+        }
+      }
+
+      setState(() {
+        _stations = merged.values.toList();
+        _isLoading = false;
+        _errorMessage = merged.isEmpty ? (lastMsg ?? '') : '';
+      });
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -94,8 +109,9 @@ class _SearchPageState extends State<SearchPage> {
             .toList();
         
         final searchKey = _searchController.text.trim();
+        final candidates = await _resolveChineseQueries(searchKey);
         final filteredRoutes = allRoutes.where((route) {
-          return route.routeName.contains(searchKey);
+          return candidates.any((c) => route.routeName.contains(c));
         }).toList();
 
         setState(() {
@@ -589,5 +605,38 @@ class _SearchPageState extends State<SearchPage> {
     if (station.stationRoad != null) parts.add(station.stationRoad!);
     if (station.stationDirect != null) parts.add(station.stationDirect!);
     return parts.join(' ');
+  }
+
+  /// Normalize the user's query into one or more Simplified-Chinese terms the
+  /// backend can match:
+  ///  - Traditional (TW/HK) input -> Simplified via OpenCC.
+  ///  - English / Japanese / Korean input -> reverse-lookup the dictionary for
+  ///    the matching Chinese name(s).
+  ///  - Otherwise (incl. no dictionary hit) the raw input is kept as fallback.
+  Future<List<String>> _resolveChineseQueries(String raw) async {
+    final locale = ZhConverter.locale;
+    final queries = <String>[];
+
+    if (locale != null &&
+        locale.languageCode == 'zh' &&
+        (locale.countryCode == 'TW' || locale.countryCode == 'HK')) {
+      try {
+        final simplified = await ChineseConverter.convert(raw, T2S());
+        queries.add(simplified);
+      } catch (_) {
+        queries.add(raw);
+      }
+    } else if (locale != null &&
+        (locale.languageCode == 'en' ||
+            locale.languageCode == 'ja' ||
+            locale.languageCode == 'ko')) {
+      final matched = NameDictionary.instance.reverseLookup(raw, locale);
+      queries.addAll(matched);
+      if (matched.isEmpty) queries.add(raw);
+    } else {
+      queries.add(raw);
+    }
+
+    return queries;
   }
 }

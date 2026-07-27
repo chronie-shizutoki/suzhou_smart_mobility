@@ -5,6 +5,7 @@ import 'pages/home_page.dart';
 import 'pages/search_page.dart';
 import 'pages/settings_page.dart';
 import 'utils/settings_manager.dart';
+import 'utils/name_localizer.dart';
 import 'utils/responsive.dart';
 import 'widgets/liquid_nav_bar.dart';
 import 'widgets/top_navigation_bar.dart';
@@ -34,6 +35,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _loadSettings() async {
     await _settingsManager.loadSettings();
+    // Load the translation dictionaries before the first frame so converted
+    // names are ready; missing/empty files are tolerated gracefully.
+    await NameDictionary.instance.load();
     if (mounted) {
       setState(() {
         _settingsLoaded = true;
