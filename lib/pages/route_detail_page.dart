@@ -356,7 +356,10 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                       ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: Icon(
+                    Icons.close,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -1068,12 +1071,14 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
     );
   }
 
-  /// Build an intuitive departure-frequency chart from the timetable.
-  /// Each bar shows how many departures happen in a given hour, so
-  /// peak (rush) hours are visually obvious at a glance.
+  /// Build an intuitive departure chart for the timetable.
+  /// Each hour gets a track whose width represents 60 minutes (刻度线);
+  /// every departure is plotted as a tick at its exact minute position, and
+  /// the concrete minute labels (分) are listed in a separate row aligned
+  /// under each tick, with the hour (时) shown on its own left column.
   Widget _buildTimetableChart(BuildContext context) {
-    final times = _timetable?.timetable ?? [];
-    if (times.isEmpty) {
+    final rawTimes = _timetable?.timetable ?? [];
+    if (rawTimes.isEmpty) {
       return Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -1087,80 +1092,122 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
       );
     }
 
-    final counts = List<int>.filled(24, 0);
-    for (final t in times) {
+    // Parse "HH:MM" into (hour, minute) records and sort chronologically.
+    final entries = <(int, int)>[];
+    for (final t in rawTimes) {
       final parts = t.split(':');
-      if (parts.isEmpty) continue;
-      final hour = int.tryParse(parts.first);
-      if (hour != null && hour >= 0 && hour < 24) {
-        counts[hour]++;
+      if (parts.length < 2) continue;
+      final hh = int.tryParse(parts[0]);
+      final mm = int.tryParse(parts[1]);
+      if (hh != null && mm != null && hh >= 0 && hh < 24 && mm >= 0 && mm < 60) {
+        entries.add((hh, mm));
       }
     }
+    entries.sort((a, b) => a.$1 != b.$1 ? a.$1 - b.$1 : a.$2 - b.$2);
 
-    var maxCount = 0;
-    for (final c in counts) {
-      if (c > maxCount) maxCount = c;
+    // Group departure minutes by hour.
+    final byHour = <int, List<int>>{};
+    for (final e in entries) {
+      byHour.putIfAbsent(e.$1, () => []).add(e.$2);
     }
+    final hours = byHour.keys.toList()..sort();
 
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final muted = theme.colorScheme.onSurface.withValues(alpha: 0.6);
     final track = theme.colorScheme.onSurface.withValues(alpha: 0.06);
+    final textColor = theme.colorScheme.onSurface.withValues(alpha: 0.85);
 
-    final hours = <int>[];
-    for (var h = 0; h < 24; h++) {
-      if (counts[h] > 0) hours.add(h);
-    }
+    const labelW = 40.0;
+    const rightGap = 8.0;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxBarWidth = constraints.maxWidth - 44 - 36;
+        // Width of the plotting area = full width minus the hour column and the right gap.
+        final trackWidth = (constraints.maxWidth - labelW - rightGap).clamp(0.0, double.infinity);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: hours.map((h) {
-            final barWidth = maxCount > 0
-                ? (counts[h] / maxCount) * (maxBarWidth > 0 ? maxBarWidth : 0)
-                : 0.0;
+            final minutes = byHour[h]!;
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 44,
-                    child: Text(
-                      '${h.toString().padLeft(2, '0')}:00',
-                      style: theme.textTheme.labelSmall?.copyWith(color: muted),
-                    ),
-                  ),
-                  SizedBox(
-                    width: maxBarWidth > 0 ? maxBarWidth : 0,
-                    height: 16,
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: track,
-                            borderRadius: BorderRadius.circular(8),
+                  // Row 1: hour column (时) + tick track (刻度线)
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: labelW,
+                        child: Text(
+                          h.toString().padLeft(2, '0'),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: muted,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Container(
-                          height: 16,
-                          width: barWidth,
-                          decoration: BoxDecoration(
-                            color: primary,
-                            borderRadius: BorderRadius.circular(8),
+                      ),
+                      Expanded(
+                        child: SizedBox(
+                          height: 14,
+                          child: Stack(
+                            children: [
+                              Container(
+                                height: 14,
+                                decoration: BoxDecoration(
+                                  color: track,
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                              ),
+                              for (final mm in minutes)
+                                Positioned(
+                                  left: trackWidth * (mm / 60) - 1.5,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 3,
+                                    decoration: BoxDecoration(
+                                      color: primary,
+                                      borderRadius: BorderRadius.circular(1.5),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: rightGap),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${counts[h]}',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  const SizedBox(height: 6),
+                  // Row 2: minute labels (分) aligned under each tick
+                  Row(
+                    children: [
+                      SizedBox(width: labelW),
+                      Expanded(
+                        child: SizedBox(
+                          height: 16,
+                          child: Stack(
+                            children: [
+                              for (final mm in minutes)
+                                Positioned(
+                                  left: (trackWidth * (mm / 60) - 12)
+                                      .clamp(0.0, trackWidth - 24),
+                                  child: SizedBox(
+                                    width: 24,
+                                    child: Text(
+                                      mm.toString().padLeft(2, '0'),
+                                      textAlign: TextAlign.center,
+                                      style: theme.textTheme.labelSmall?.copyWith(color: textColor),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: rightGap),
+                    ],
                   ),
                 ],
               ),
