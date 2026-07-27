@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
-import '../theme/glass_theme.dart';
 import '../utils/settings_manager.dart';
+import '../widgets/glass_container.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -16,6 +16,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String _currentLanguage = 'zh';
   String? _currentCountryCode;
   bool _careMode = false;
+  double _fontScale = 1.4;
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _currentLanguage = _settingsManager.locale.languageCode;
       _currentCountryCode = _settingsManager.locale.countryCode;
       _careMode = _settingsManager.careMode;
+      _fontScale = _settingsManager.fontScale;
     });
   }
 
@@ -53,6 +55,23 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       _careMode = value;
     });
+  }
+
+  Future<void> _changeFontScale(double value) async {
+    await _settingsManager.setFontScale(value);
+    setState(() {
+      _fontScale = value;
+    });
+  }
+
+  String get _languageValue {
+    if (_currentLanguage == 'zh' && _currentCountryCode == 'TW') {
+      return 'zh_TW';
+    }
+    if (_currentLanguage == 'zh' && _currentCountryCode == 'HK') {
+      return 'zh_HK';
+    }
+    return _currentLanguage;
   }
 
   @override
@@ -112,9 +131,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildContent(BuildContext context, AppLocalizations localizations, bool isDark) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      // Bottom padding to avoid overlapping with floating navigation bar
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
       children: [
         _buildCareModeSection(context, localizations, isDark),
+        // Font-size slider is only relevant when care mode is enabled.
+        if (_careMode) ...[
+          const SizedBox(height: 16),
+          _buildFontScaleSection(context, localizations, isDark),
+        ],
         const SizedBox(height: 16),
         _buildThemeSection(context, localizations, isDark),
         const SizedBox(height: 16),
@@ -125,58 +150,98 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildCareModeSection(BuildContext context, AppLocalizations localizations, bool isDark) {
+  Widget _buildSectionIcon(IconData icon, Color color) {
     return Container(
-      decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(icon, color: color),
+    );
+  }
+
+  Widget _buildCareModeSection(BuildContext context, AppLocalizations localizations, bool isDark) {
+    return GlassContainer(
+      padding: const EdgeInsets.all(16),
+      child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+          _buildSectionIcon(Icons.accessibility_new, Colors.orange),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.accessibility_new,
-                    color: Colors.orange,
-                  ),
+                Text(
+                  localizations.careMode,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        localizations.careMode,
-                        style: Theme.of(context).textTheme.titleLarge,
+                const SizedBox(height: 2),
+                Text(
+                  localizations.careModeDescription,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                       ),
-                      Text(
-                        localizations.careModeDescription,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey,
-                            ),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),
           ),
-          SwitchListTile(
+          const SizedBox(width: 8),
+          Switch(
             value: _careMode,
+            activeThumbColor: Colors.orange,
             onChanged: _toggleCareMode,
-            secondary: Icon(
-              _careMode ? Icons.check_circle : Icons.circle_outlined,
-              color: _careMode ? Colors.orange : Colors.grey,
-            ),
-            title: Text(
-              _careMode ? localizations.careModeEnabled : localizations.careModeDisabled,
-            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFontScaleSection(BuildContext context, AppLocalizations localizations, bool isDark) {
+    return GlassContainer(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _buildSectionIcon(Icons.format_size, Colors.orange),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      localizations.fontScale,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${(_fontScale * 100).round()}%',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.6),
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Slider(
+            value: _fontScale,
+            min: 1.0,
+            max: 2.0,
+            divisions: 10,
+            label: '${(_fontScale * 100).round()}%',
+            activeColor: Colors.orange,
+            onChanged: _changeFontScale,
           ),
         ],
       ),
@@ -184,201 +249,209 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildThemeSection(BuildContext context, AppLocalizations localizations, bool isDark) {
-    return Container(
-      decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return GlassContainer(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.palette,
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  localizations.theme,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ],
+          _buildSectionIcon(Icons.palette, Colors.blue),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              localizations.theme,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          RadioListTile<ThemeMode>(
-            title: Text(localizations.lightTheme),
-            subtitle: Text(localizations.alwaysUseLight),
+          _buildThemeDropdown(context, localizations, isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemeDropdown(BuildContext context, AppLocalizations localizations, bool isDark) {
+    return _buildDropdownShell(
+      isDark: isDark,
+      child: DropdownButton<ThemeMode>(
+        value: _currentThemeMode,
+        isDense: true,
+        borderRadius: BorderRadius.circular(16),
+        dropdownColor: isDark
+            ? const Color(0xFF1A1A2E).withValues(alpha: 0.96)
+            : Colors.white.withValues(alpha: 0.96),
+        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.blue),
+        underline: const SizedBox.shrink(),
+        items: [
+          DropdownMenuItem(
             value: ThemeMode.light,
-            groupValue: _currentThemeMode,
-            onChanged: (value) {
-              if (value != null) {
-                _changeThemeMode(value);
-              }
-            },
-            secondary: const Icon(Icons.light_mode, color: Colors.blue),
+            child: _buildDropdownItem(Icons.light_mode, localizations.lightTheme),
           ),
-          RadioListTile<ThemeMode>(
-            title: Text(localizations.darkTheme),
-            subtitle: Text(localizations.alwaysUseDark),
+          DropdownMenuItem(
             value: ThemeMode.dark,
-            groupValue: _currentThemeMode,
-            onChanged: (value) {
-              if (value != null) {
-                _changeThemeMode(value);
-              }
-            },
-            secondary: const Icon(Icons.dark_mode, color: Colors.blue),
+            child: _buildDropdownItem(Icons.dark_mode, localizations.darkTheme),
           ),
-          RadioListTile<ThemeMode>(
-            title: Text(localizations.systemTheme),
-            subtitle: Text(localizations.followSystem),
+          DropdownMenuItem(
             value: ThemeMode.system,
-            groupValue: _currentThemeMode,
-            onChanged: (value) {
-              if (value != null) {
-                _changeThemeMode(value);
-              }
-            },
-            secondary: const Icon(Icons.brightness_auto, color: Colors.blue),
+            child: _buildDropdownItem(Icons.brightness_auto, localizations.systemTheme),
           ),
         ],
+        onChanged: (value) {
+          if (value != null) {
+            _changeThemeMode(value);
+          }
+        },
       ),
     );
   }
 
   Widget _buildLanguageSection(BuildContext context, AppLocalizations localizations, bool isDark) {
-    return Container(
-      decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return GlassContainer(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.language,
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  localizations.language,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ],
+          _buildSectionIcon(Icons.language, Colors.teal),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              localizations.language,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          RadioListTile<String>(
-            title: Text(localizations.english),
-            value: 'en',
-            groupValue: _currentLanguage,
-            selected: _currentLanguage == 'en' && _currentCountryCode == null,
-            onChanged: (value) {
-              if (value != null) {
-                _changeLanguage(value);
-              }
-            },
-          ),
-          RadioListTile<String>(
-            title: Text(localizations.chineseSimplified),
-            value: 'zh',
-            groupValue: _currentLanguage,
-            selected: _currentLanguage == 'zh' && _currentCountryCode == null,
-            onChanged: (value) {
-              if (value != null) {
-                _changeLanguage(value);
-              }
-            },
-          ),
-          RadioListTile<String>(
-            title: Text(localizations.chineseTraditional),
-            value: 'zh_TW',
-            groupValue: _currentLanguage,
-            selected: _currentLanguage == 'zh' && _currentCountryCode == 'TW',
-            onChanged: (value) {
-              if (value != null) {
-                _changeLanguage('zh', countryCode: 'TW');
-              }
-            },
-          ),
-          RadioListTile<String>(
-            title: Text(localizations.japanese),
-            value: 'ja',
-            groupValue: _currentLanguage,
-            selected: _currentLanguage == 'ja' && _currentCountryCode == null,
-            onChanged: (value) {
-              if (value != null) {
-                _changeLanguage(value);
-              }
-            },
-          ),
-          RadioListTile<String>(
-            title: Text(localizations.korean),
-            value: 'ko',
-            groupValue: _currentLanguage,
-            selected: _currentLanguage == 'ko' && _currentCountryCode == null,
-            onChanged: (value) {
-              if (value != null) {
-                _changeLanguage(value);
-              }
-            },
-          ),
+          _buildLanguageDropdown(context, localizations, isDark),
         ],
       ),
     );
   }
 
-  Widget _buildAboutSection(BuildContext context, AppLocalizations localizations, bool isDark) {
+  Widget _buildLanguageDropdown(BuildContext context, AppLocalizations localizations, bool isDark) {
+    return _buildDropdownShell(
+      isDark: isDark,
+      child: DropdownButton<String>(
+        value: _languageValue,
+        isDense: true,
+        borderRadius: BorderRadius.circular(16),
+        dropdownColor: isDark
+            ? const Color(0xFF1A1A2E).withValues(alpha: 0.96)
+            : Colors.white.withValues(alpha: 0.96),
+        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.blue),
+        underline: const SizedBox.shrink(),
+        items: [
+          DropdownMenuItem(
+            value: 'zh',
+            child: Text(localizations.chineseSimplified),
+          ),
+          DropdownMenuItem(
+            value: 'zh_TW',
+            child: Text(localizations.chineseTraditional),
+          ),
+          DropdownMenuItem(
+            value: 'zh_HK',
+            child: Text(localizations.chineseHongKong),
+          ),
+          DropdownMenuItem(
+            value: 'en',
+            child: Text(localizations.english),
+          ),
+          DropdownMenuItem(
+            value: 'ja',
+            child: Text(localizations.japanese),
+          ),
+          DropdownMenuItem(
+            value: 'ko',
+            child: Text(localizations.korean),
+          ),
+        ],
+        onChanged: (value) {
+          if (value == null) return;
+          if (value == 'zh_TW') {
+            _changeLanguage('zh', countryCode: 'TW');
+          } else if (value == 'zh_HK') {
+            _changeLanguage('zh', countryCode: 'HK');
+          } else {
+            _changeLanguage(value);
+          }
+        },
+      ),
+    );
+  }
+
+  /// Glass shell for dropdown buttons
+  Widget _buildDropdownShell({required bool isDark, required Widget child}) {
     return Container(
-      decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.white.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isDark ? 0.18 : 0.7),
+        ),
+      ),
+      child: DropdownButtonHideUnderline(child: child),
+    );
+  }
+
+  Widget _buildDropdownItem(IconData icon, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 18, color: Colors.blue),
+        const SizedBox(width: 8),
+        Text(label),
+      ],
+    );
+  }
+
+  Widget _buildAboutSection(BuildContext context, AppLocalizations localizations, bool isDark) {
+    return GlassContainer(
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.info,
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  localizations.about,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ],
-            ),
+          Row(
+            children: [
+              _buildSectionIcon(Icons.info, Colors.indigo),
+              const SizedBox(width: 12),
+              Text(
+                localizations.about,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ],
           ),
-          ListTile(
-            title: Text(localizations.appTitle),
-            leading: const Icon(Icons.directions_bus, color: Colors.blue),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(Icons.directions_bus, color: Colors.blue, size: 20),
+              const SizedBox(width: 12),
+              Text(
+                localizations.appTitle,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
           ),
-          ListTile(
-            title: Text(localizations.version),
-            subtitle: Text('${localizations.appTitle} 1.0.0 rc01'),
-            leading: const Icon(Icons.tag, color: Colors.blue),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(Icons.tag, color: Colors.blue, size: 20),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    localizations.version,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Text(
+                    '${localizations.appTitle} 1.0.0',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
+                        ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),

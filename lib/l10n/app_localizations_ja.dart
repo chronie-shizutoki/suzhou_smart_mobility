@@ -277,4 +277,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get no => 'いいえ';
+
+  @override
+  String get fontScale => 'フォントサイズ';
+
+  @override
+  String get chineseHongKong => '繁體中文（香港）';
 }

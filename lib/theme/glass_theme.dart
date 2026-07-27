@@ -9,8 +9,8 @@ class GlassTheme {
     return _buildLightTheme(careMode: true);
   }
 
-  static ThemeData _buildLightTheme({required bool careMode}) {
-    final fontSizeMultiplier = careMode ? 1.4 : 1.0;
+  static ThemeData _buildLightTheme({required bool careMode, double fontScale = 1.0}) {
+    final fontSizeMultiplier = careMode ? fontScale.clamp(1.0, 2.5) : 1.0;
     final textTheme = _buildTextTheme(Brightness.light, fontSizeMultiplier);
     
     return ThemeData(
@@ -107,8 +107,20 @@ class GlassTheme {
     return _buildDarkTheme(careMode: true);
   }
 
-  static ThemeData _buildDarkTheme({required bool careMode}) {
-    final fontSizeMultiplier = careMode ? 1.4 : 1.0;
+  /// Scale-aware light theme.
+  /// When [careMode] is true, [fontScale] (1.0 - 2.5) is applied on
+  /// top of the larger care-mode text sizes so users can fine-tune readability.
+  static ThemeData lightThemeWithScale(bool careMode, double fontScale) {
+    return _buildLightTheme(careMode: careMode, fontScale: fontScale);
+  }
+
+  /// Scale-aware dark theme. See [lightThemeWithScale].
+  static ThemeData darkThemeWithScale(bool careMode, double fontScale) {
+    return _buildDarkTheme(careMode: careMode, fontScale: fontScale);
+  }
+
+  static ThemeData _buildDarkTheme({required bool careMode, double fontScale = 1.0}) {
+    final fontSizeMultiplier = careMode ? fontScale.clamp(1.0, 2.5) : 1.0;
     final textTheme = _buildTextTheme(Brightness.dark, fontSizeMultiplier);
     
     return ThemeData(

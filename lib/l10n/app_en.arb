@@ -89,5 +89,7 @@
   "confirm": "Confirm",
   "ok": "OK",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "fontScale": "Font Size",
+  "chineseHongKong": "Traditional Chinese (Hong Kong)"
 }

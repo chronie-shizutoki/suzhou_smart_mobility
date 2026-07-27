@@ -5,6 +5,7 @@ import '../models/station.dart';
 import '../models/route.dart' as models;
 import '../utils/location_service.dart';
 import '../theme/glass_theme.dart';
+import '../utils/zh_converter.dart';
 import '../widgets/liquid_slider_tab.dart';
 import 'route_detail_page.dart';
 import 'station_detail_page.dart';
@@ -367,7 +368,8 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      // Bottom padding to avoid overlapping with floating navigation bar
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
       itemCount: _stations.length,
       itemBuilder: (context, index) {
         final station = _stations[index];
@@ -385,12 +387,12 @@ class _SearchPageState extends State<SearchPage> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.2),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.location_on,
-                      color: Colors.blue,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -398,16 +400,17 @@ class _SearchPageState extends State<SearchPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        ConvertedText(
                           station.stationName,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         if (station.stationRoad != null || station.stationDirect != null) ...[
                           const SizedBox(height: 4),
-                          Text(
+                          ConvertedText(
                             _buildStationTitle(station),
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
@@ -485,7 +488,8 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      // Bottom padding to avoid overlapping with floating navigation bar
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
       itemCount: _routes.length,
       itemBuilder: (context, index) {
         final route = _routes[index];
@@ -503,12 +507,12 @@ class _SearchPageState extends State<SearchPage> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.2),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.directions_bus,
-                      color: Colors.blue,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -516,9 +520,11 @@ class _SearchPageState extends State<SearchPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        ConvertedText(
                           route.routeName,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         const SizedBox(height: 8),
                         Row(
@@ -529,7 +535,14 @@ class _SearchPageState extends State<SearchPage> {
                               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                             const SizedBox(width: 4),
-                            Text('${localizations.from}: ${route.startStation ?? localizations.notAvailable}'),
+                            Expanded(
+                              child: ConvertedText(
+                                route.startStation ?? localizations.notAvailable,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                         Row(
@@ -540,7 +553,14 @@ class _SearchPageState extends State<SearchPage> {
                               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                             const SizedBox(width: 4),
-                            Text('${localizations.to}: ${route.endStation ?? localizations.notAvailable}'),
+                            Expanded(
+                              child: ConvertedText(
+                                route.endStation ?? localizations.notAvailable,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ],

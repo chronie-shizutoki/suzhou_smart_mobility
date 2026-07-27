@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 enum NavBarMode {
-  iconsOnly,  // 小屏幕：仅显示图标
-  textOnly,   // 大屏幕：仅显示文字
+  iconsOnly,  // Small screens: icons only
+  textOnly,   // Large screens: text only
 }
 
 class LiquidNavBar extends StatefulWidget {
@@ -144,7 +144,7 @@ class _LiquidNavBarState extends State<LiquidNavBar>
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // 阴影层
+          // Shadow layer
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -169,7 +169,7 @@ class _LiquidNavBarState extends State<LiquidNavBar>
               ),
             ),
           ),
-          // 内容层
+          // Content layer
           ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: BackdropFilter(

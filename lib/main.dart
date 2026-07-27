@@ -56,8 +56,8 @@ class _MyAppState extends State<MyApp> {
         return MaterialApp(
           title: _getAppTitle(),
           debugShowCheckedModeBanner: false,
-          theme: careMode ? GlassTheme.lightThemeCareMode : GlassTheme.lightTheme,
-          darkTheme: careMode ? GlassTheme.darkThemeCareMode : GlassTheme.darkTheme,
+          theme: GlassTheme.lightThemeWithScale(careMode, _settingsManager.fontScale),
+          darkTheme: GlassTheme.darkThemeWithScale(careMode, _settingsManager.fontScale),
           themeMode: _settingsManager.themeMode,
           locale: _settingsManager.locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -74,6 +74,8 @@ class _MyAppState extends State<MyApp> {
       case 'zh':
         return '智行苏州';
       case 'zh_TW':
+        return '智行蘇州';
+      case 'zh_HK':
         return '智行蘇州';
       case 'ja':
         return '蘇州スマートモビリティ';

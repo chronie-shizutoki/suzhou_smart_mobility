@@ -277,4 +277,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get no => '아니오';
+
+  @override
+  String get fontScale => '글꼴 크기';
+
+  @override
+  String get chineseHongKong => '번체 중국어(홍콩)';
 }

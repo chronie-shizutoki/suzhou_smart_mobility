@@ -89,5 +89,7 @@
   "confirm": "확인",
   "ok": "확인",
   "yes": "예",
-  "no": "아니오"
+  "no": "아니오",
+  "fontScale": "글꼴 크기",
+  "chineseHongKong": "번체 중국어(홍콩)"
 }

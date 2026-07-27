@@ -109,7 +109,7 @@ class _LiquidSliderTabState extends State<LiquidSliderTab>
           child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // 阴影层
+            // Shadow layer
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
@@ -134,7 +134,7 @@ class _LiquidSliderTabState extends State<LiquidSliderTab>
                 ),
               ),
             ),
-            // 内容层
+            // Content layer
             ClipRRect(
               borderRadius: BorderRadius.circular(25),
               child: BackdropFilter(

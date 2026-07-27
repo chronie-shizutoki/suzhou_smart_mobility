@@ -277,6 +277,293 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get no => '否';
+
+  @override
+  String get fontScale => '字号';
+
+  @override
+  String get chineseHongKong => '繁體中文（香港）';
+}
+
+/// The translations for Chinese, as used in Hong Kong (`zh_HK`).
+class AppLocalizationsZhHk extends AppLocalizationsZh {
+  AppLocalizationsZhHk() : super('zh_HK');
+
+  @override
+  String get appTitle => '智行蘇州';
+
+  @override
+  String get home => '首頁';
+
+  @override
+  String get search => '搜尋';
+
+  @override
+  String get settings => '設定';
+
+  @override
+  String get nearbyStations => '附近車站';
+
+  @override
+  String get queryNearbyStations => '查詢附近車站';
+
+  @override
+  String get distance => '距離';
+
+  @override
+  String get meters => '米';
+
+  @override
+  String get latitude => '緯度';
+
+  @override
+  String get longitude => '經度';
+
+  @override
+  String get stationId => '車站ID';
+
+  @override
+  String get searchRoutes => '搜尋路線';
+
+  @override
+  String get routes => '路線';
+
+  @override
+  String get from => '起點';
+
+  @override
+  String get to => '開往';
+
+  @override
+  String get notAvailable => '未知';
+
+  @override
+  String get searchStations => '車站';
+
+  @override
+  String get searchPlaceholder => '搜尋車站或路線⋯';
+
+  @override
+  String get theme => '主題';
+
+  @override
+  String get darkMode => '深色模式';
+
+  @override
+  String get language => '語言';
+
+  @override
+  String get about => '關於';
+
+  @override
+  String get version => '版本';
+
+  @override
+  String get failedToGetLocation => '無法獲取位置資訊，請檢查權限設定。';
+
+  @override
+  String get unknownError => '未知錯誤';
+
+  @override
+  String get loading => '載入中⋯';
+
+  @override
+  String get noData => '暫無資料';
+
+  @override
+  String get routeId => '路線ID';
+
+  @override
+  String get routeName => '路線名稱';
+
+  @override
+  String get startStation => '起點站';
+
+  @override
+  String get endStation => '終點站';
+
+  @override
+  String get stationName => '車站名稱';
+
+  @override
+  String get routeDetail => '路線詳情';
+
+  @override
+  String get stationDetail => '車站詳情';
+
+  @override
+  String get stations => '車站';
+
+  @override
+  String get buses => '車輛';
+
+  @override
+  String get timetable => '時間表';
+
+  @override
+  String get plateNumber => '車牌號碼';
+
+  @override
+  String get lightTheme => '淺色';
+
+  @override
+  String get darkTheme => '深色';
+
+  @override
+  String get systemTheme => '自動';
+
+  @override
+  String get alwaysUseLight => '始終使用淺色主題';
+
+  @override
+  String get alwaysUseDark => '始終使用深色主題';
+
+  @override
+  String get followSystem => '跟隨系統主題';
+
+  @override
+  String get firstBus => '首班';
+
+  @override
+  String get lastBus => '尾班';
+
+  @override
+  String get minutes => '分鐘';
+
+  @override
+  String get arrivingSoon => '即將到站';
+
+  @override
+  String get busAtStation => '車輛已到站';
+
+  @override
+  String get notStarted => '服務尚未開始';
+
+  @override
+  String get ended => '服務已結束';
+
+  @override
+  String get notOperatingToday => '今日暫停服務';
+
+  @override
+  String get walking => '步行';
+
+  @override
+  String get withinMinutes => '內';
+
+  @override
+  String get waitingForDeparture => '等待開出';
+
+  @override
+  String get runDirection => '行駛方向';
+
+  @override
+  String get ticketPrice => '票價';
+
+  @override
+  String get yuan => '元';
+
+  @override
+  String get flipPrice => '分段收費';
+
+  @override
+  String get nextDeparture => '預計開出';
+
+  @override
+  String get estimatedDeparture => '預計開出時間';
+
+  @override
+  String get hasPassedLastDeparture => '已過尾班開出時間';
+
+  @override
+  String get highPeak => '繁忙';
+
+  @override
+  String get plainPeak => '非繁忙';
+
+  @override
+  String get lowPeak => '低峰';
+
+  @override
+  String get stationsAway => '個站';
+
+  @override
+  String get km => '公里';
+
+  @override
+  String get within100m => '100米內';
+
+  @override
+  String get refresh => '重新整理';
+
+  @override
+  String get reverse => '反向';
+
+  @override
+  String get collect => '收藏';
+
+  @override
+  String get collected => '已收藏';
+
+  @override
+  String get feedback => '意見回饋';
+
+  @override
+  String get vertical => '直向';
+
+  @override
+  String get more => '更多';
+
+  @override
+  String get careMode => '關懷模式';
+
+  @override
+  String get careModeDescription => '放大字型及提高對比度，提升可讀性';
+
+  @override
+  String get careModeEnabled => '關懷模式已啟用';
+
+  @override
+  String get careModeDisabled => '關懷模式已關閉';
+
+  @override
+  String get locationNotInSuzhou => '你目前的位置不在蘇州';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get chineseSimplified => '简体中文';
+
+  @override
+  String get chineseTraditional => '繁體中文';
+
+  @override
+  String get japanese => '日本語';
+
+  @override
+  String get korean => '한국어';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get confirm => '確認';
+
+  @override
+  String get ok => '確定';
+
+  @override
+  String get yes => '是';
+
+  @override
+  String get no => '否';
+
+  @override
+  String get fontScale => '字型大小';
+
+  @override
+  String get chineseHongKong => '繁體中文（香港）';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -395,7 +682,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get timetable => '時刻表';
 
   @override
-  String get plateNumber => '車牌號';
+  String get plateNumber => '車牌號碼';
 
   @override
   String get lightTheme => '淺色';
@@ -416,19 +703,19 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get followSystem => '跟隨系統主題';
 
   @override
-  String get firstBus => '首';
+  String get firstBus => '首班';
 
   @override
-  String get lastBus => '末';
+  String get lastBus => '末班';
 
   @override
   String get minutes => '分鐘';
 
   @override
-  String get arrivingSoon => '即將進站';
+  String get arrivingSoon => '即將到站';
 
   @override
-  String get busAtStation => '車輛進站';
+  String get busAtStation => '車輛到站';
 
   @override
   String get notStarted => '營運未開始';
@@ -437,7 +724,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get ended => '營運已結束';
 
   @override
-  String get notOperatingToday => '今日不營運';
+  String get notOperatingToday => '今日未營運';
 
   @override
   String get walking => '步行';
@@ -458,7 +745,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get yuan => '元';
 
   @override
-  String get flipPrice => '翻牌票價';
+  String get flipPrice => '分段票價';
 
   @override
   String get nextDeparture => '預計發車';
@@ -470,10 +757,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get hasPassedLastDeparture => '已過末班發車時間';
 
   @override
-  String get highPeak => '高峰';
+  String get highPeak => '尖峰';
 
   @override
-  String get plainPeak => '平峰';
+  String get plainPeak => '離峰';
 
   @override
   String get lowPeak => '低峰';
@@ -482,10 +769,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get stationsAway => '站';
 
   @override
-  String get km => 'km';
+  String get km => '公里';
 
   @override
-  String get within100m => '100m內';
+  String get within100m => '100公尺內';
 
   @override
   String get refresh => '重新整理';
@@ -500,7 +787,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get collected => '已收藏';
 
   @override
-  String get feedback => '回饋';
+  String get feedback => '意見回饋';
 
   @override
   String get vertical => '直式';
@@ -512,7 +799,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get careMode => '關懷模式';
 
   @override
-  String get careModeDescription => '更大字號和更高對比度，提升可讀性';
+  String get careModeDescription => '放大字型及提高對比度，提升可讀性';
 
   @override
   String get careModeEnabled => '關懷模式已啟用';
@@ -552,4 +839,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get no => '否';
+
+  @override
+  String get fontScale => '字型大小';
+
+  @override
+  String get chineseHongKong => '繁體中文（香港）';
 }

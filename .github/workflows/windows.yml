@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v3
       - name: Setup Visual Studio shell
@@ -25,10 +25,10 @@ jobs:
         run: flutter --version
       - name: Check Windows build environment
         run: |
-          echo "检查Windows构建环境..."
-          echo "检查MSBuild..."
+          echo "Checking Windows build environment..."
+          echo "Checking MSBuild..."
           where msbuild 2>null || echo "MSBuild not found in PATH"
-          echo "检查PowerShell版本..."
+          echo "Checking PowerShell version..."
           $PSVersionTable.PSVersion
       - name: Install dependencies
         run: flutter pub get
@@ -37,14 +37,14 @@ jobs:
         run: flutter config --enable-windows-desktop
       - name: Build Windows release
         run: |
-          echo "开始Windows构建..."
+          echo "Building Windows release..."
           flutter build windows --release -v
-          echo "构建完成，检查输出目录..."
+          echo "Build completed, checking output directory..."
           if (Test-Path -Path build/windows/x64/runner/Release/) {
-            echo "输出目录存在，列出文件："
+            echo "Output directory exists, listing files:"
             Get-ChildItem -Path build/windows/x64/runner/Release/ | Format-Table -AutoSize
           } else {
-            echo "警告：输出目录不存在"
+            echo "Warning: Output directory does not exist"
           }
         working-directory: ./
       - name: Upload Windows build artifact

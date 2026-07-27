@@ -6,6 +6,7 @@ import '../models/station.dart';
 import '../models/route.dart' as models;
 import '../utils/location_service.dart';
 import '../theme/glass_theme.dart';
+import '../utils/zh_converter.dart';
 import 'route_detail_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -42,21 +43,25 @@ class _HomePageState extends State<HomePage> {
   void _startAutoRefresh() {
     _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       if (mounted) {
-        _queryNearbyStations();
+        // Silent refresh: no fullscreen loading, no scroll position disruption
+        _queryNearbyStations(silent: true);
       }
     });
   }
 
-  Future<void> _queryNearbyStations() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = '';
-    });
+  Future<void> _queryNearbyStations({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = '';
+      });
+    }
 
     try {
       final position = await LocationService.getCurrentPosition();
       
       if (position == null) {
+        if (silent) return; // Silent refresh failed, keep old data
         setState(() {
           _errorMessage = AppLocalizations.of(context)!.failedToGetLocation;
           _isLoading = false;
@@ -69,19 +74,20 @@ class _HomePageState extends State<HomePage> {
 
       // Debug: print actual coordinates
       debugPrint('GPS Coordinates: lat=$latitude, lng=$longitude');
-
+      
       // More precise Suzhou geographical boundaries with some buffer
-      // Suzhou is roughly: 30.75°N to 32.1°N, 119.8°E to 121.3°E
-      const double suzhouMinLat = 30.7;
-      const double suzhouMaxLat = 32.2;
-      const double suzhouMinLng = 119.7;
-      const double suzhouMaxLng = 121.4;
+      // Suzhou is roughly: 30.47°N to 32.02°N, 119.55°E to 121.20°E
+      const double suzhouMinLat = 30.47;
+      const double suzhouMaxLat = 32.02;
+      const double suzhouMinLng = 119.55;
+      const double suzhouMaxLng = 121.20;
 
       debugPrint('Suzhou boundaries: lat[$suzhouMinLat-$suzhouMaxLat], lng[$suzhouMinLng-$suzhouMaxLng]');
       debugPrint('Check: lat < min? ${latitude < suzhouMinLat}, lat > max? ${latitude > suzhouMaxLat}');
       debugPrint('Check: lng < min? ${longitude < suzhouMinLng}, lng > max? ${longitude > suzhouMaxLng}');
 
       if (latitude < suzhouMinLat || latitude > suzhouMaxLat || longitude < suzhouMinLng || longitude > suzhouMaxLng) {
+        if (silent) return;
         setState(() {
           _errorMessage = AppLocalizations.of(context)!.locationNotInSuzhou;
           _isLoading = false;
@@ -101,9 +107,11 @@ class _HomePageState extends State<HomePage> {
               .map((e) => Station.fromJson(e as Map<String, dynamic>))
               .toList();
           _isLoading = false;
+          _errorMessage = '';
         });
-        await _queryAllStationRoutes();
+        await _queryAllStationRoutes(forceRefresh: silent);
       } else {
+        if (silent) return;
         setState(() {
           _errorMessage = result['msg']?.toString() ?? AppLocalizations.of(context)!.unknownError;
           _isLoading = false;
@@ -111,6 +119,7 @@ class _HomePageState extends State<HomePage> {
         return;
       }
     } catch (e) {
+      if (silent) return;
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -118,9 +127,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _queryAllStationRoutes() async {
+  Future<void> _queryAllStationRoutes({bool forceRefresh = false}) async {
     for (final station in _nearbyStations) {
-      if (_stationRoutes[station.stationId] == null) {
+      if (forceRefresh || _stationRoutes[station.stationId] == null) {
         await _queryStationRoutes(station);
         await Future.delayed(const Duration(milliseconds: 500));
       }
@@ -131,6 +140,7 @@ class _HomePageState extends State<HomePage> {
     try {
       final position = await LocationService.getCurrentPosition();
       
+      if (!mounted) return;
       if (position == null) {
         setState(() {
           _stationRoutes[station.stationId] = [];
@@ -149,6 +159,7 @@ class _HomePageState extends State<HomePage> {
         latitude: latitude,
       );
 
+      if (!mounted) return;
       if (result['status'] == true && result['items'] != null) {
         final items = result['items'] as List;
         if (items.isNotEmpty) {
@@ -304,7 +315,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildContent(BuildContext context, AppLocalizations localizations, bool isDark) {
-    if (_isLoading) {
+    // Show fullscreen loading only on initial load (when no data), keep list and scroll position on refresh
+    if (_isLoading && _nearbyStations.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -317,7 +329,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    if (_errorMessage.isNotEmpty) {
+    if (_errorMessage.isNotEmpty && _nearbyStations.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -341,7 +353,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    if (_nearbyStations.isEmpty) {
+    if (_nearbyStations.isEmpty && !_isLoading) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -364,9 +376,11 @@ class _HomePageState extends State<HomePage> {
     }
 
     return RefreshIndicator(
-      onRefresh: _queryNearbyStations,
+      // Pull-to-refresh with silent mode, avoid full-page loading causing scroll position loss
+      onRefresh: () => _queryNearbyStations(silent: true),
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        // Bottom padding to avoid being covered by floating navigation bar
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
         itemCount: _nearbyStations.length,
         itemBuilder: (context, index) {
         final station = _nearbyStations[index];
@@ -394,7 +408,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.blue,
                   ),
                 ),
-                title: Text(
+                title: ConvertedText(
                   _buildStationTitle(station),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -522,7 +536,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
+              child: ConvertedText(
                 route.routeName,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -542,7 +556,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(width: 4),
             Expanded(
-              child: Text(
+              child: ConvertedText(
                 route.endStation ?? localizations.notAvailable,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w500,

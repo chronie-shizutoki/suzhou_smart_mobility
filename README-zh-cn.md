@@ -72,7 +72,7 @@
   'content-type': 'application/json',
   'timestamp': '<Unix 时间戳>',
   'Accept-Encoding': 'gzip,compress,br,deflate',
-  'User-Agent': 'Mozilla/5.0 (iPhone; CPU OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.73(0x18004524) NetType/5G Language/zh_CN'
+  'User-Agent': 'Mozilla/5.0 (iPhone; CPU OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.75(0x18004524) NetType/5G Language/zh_CN'
 }
 ```
 

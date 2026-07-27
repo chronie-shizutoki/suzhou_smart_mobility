@@ -279,4 +279,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get no => 'No';
+
+  @override
+  String get fontScale => 'Font Size';
+
+  @override
+  String get chineseHongKong => 'Traditional Chinese (Hong Kong)';
 }

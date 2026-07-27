@@ -89,5 +89,7 @@
   "confirm": "確認",
   "ok": "OK",
   "yes": "はい",
-  "no": "いいえ"
+  "no": "いいえ",
+  "fontScale": "フォントサイズ",
+  "chineseHongKong": "繁體中文（香港）"
 }

@@ -100,6 +100,7 @@ abstract class AppLocalizations {
     Locale('ja'),
     Locale('ko'),
     Locale('zh'),
+    Locale('zh', 'HK'),
     Locale('zh', 'TW'),
   ];
 
@@ -642,6 +643,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No'**
   String get no;
+
+  /// No description provided for @fontScale.
+  ///
+  /// In en, this message translates to:
+  /// **'Font Size'**
+  String get fontScale;
+
+  /// No description provided for @chineseHongKong.
+  ///
+  /// In en, this message translates to:
+  /// **'Traditional Chinese (Hong Kong)'**
+  String get chineseHongKong;
 }
 
 class _AppLocalizationsDelegate
@@ -667,6 +680,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     case 'zh':
       {
         switch (locale.countryCode) {
+          case 'HK':
+            return AppLocalizationsZhHk();
           case 'TW':
             return AppLocalizationsZhTw();
         }

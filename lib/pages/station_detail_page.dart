@@ -5,6 +5,8 @@ import '../services/suzhi_bus_api.dart';
 import '../models/route.dart' as models;
 import '../utils/location_service.dart';
 import '../theme/glass_theme.dart';
+import '../utils/zh_converter.dart';
+import '../widgets/glass_container.dart';
 import 'route_detail_page.dart';
 
 class StationDetailPage extends StatefulWidget {
@@ -49,21 +51,26 @@ class _StationDetailPageState extends State<StationDetailPage> {
   void _startAutoRefresh() {
     _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       if (mounted) {
-        _loadStationRoutes();
+        // Silent refresh: no fullscreen loading, no scroll position disruption
+        _loadStationRoutes(silent: true);
       }
     });
   }
 
-  Future<void> _loadStationRoutes() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = '';
-    });
+  Future<void> _loadStationRoutes({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = '';
+      });
+    }
 
     try {
       final position = await LocationService.getCurrentPosition();
       
+      if (!mounted) return;
       if (position == null) {
+        if (silent) return; // Silent refresh failed, keep old data
         setState(() {
           _errorMessage = AppLocalizations.of(context)!.failedToGetLocation;
           _isLoading = false;
@@ -78,20 +85,24 @@ class _StationDetailPageState extends State<StationDetailPage> {
         latitude: position.latitude,
       );
 
+      if (!mounted) return;
       if (result['status'] == true && result['items'] != null) {
         setState(() {
           _routes = (result['items'] as List)
               .map((e) => models.BusRoute.fromJson(e as Map<String, dynamic>))
               .toList();
           _isLoading = false;
+          _errorMessage = '';
         });
       } else {
+        if (silent) return;
         setState(() {
           _errorMessage = result['msg']?.toString() ?? AppLocalizations.of(context)!.unknownError;
           _isLoading = false;
         });
       }
     } catch (e) {
+      if (silent) return;
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -363,29 +374,24 @@ class _StationDetailPageState extends State<StationDetailPage> {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.blue.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.blue),
-              onPressed: () => Navigator.pop(context),
-            ),
+          GlassIconButton(
+            icon: Icons.arrow_back_ios_new_rounded,
+            iconColor: Colors.blue,
+            onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                ConvertedText(
                   widget.stationName,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 if (widget.stationRoad != null)
-                  Text(
+                  ConvertedText(
                     widget.stationRoad!,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -400,7 +406,8 @@ class _StationDetailPageState extends State<StationDetailPage> {
   }
 
   Widget _buildContent(BuildContext context, AppLocalizations localizations, bool isDark) {
-    if (_isLoading) {
+    // Show fullscreen loading only when first loading (no data available)
+    if (_isLoading && _routes.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -413,7 +420,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
       );
     }
 
-    if (_errorMessage.isNotEmpty) {
+    if (_errorMessage.isNotEmpty && _routes.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -437,7 +444,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
       );
     }
 
-    if (_routes.isEmpty) {
+    if (_routes.isEmpty && !_isLoading) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -460,7 +467,8 @@ class _StationDetailPageState extends State<StationDetailPage> {
     }
 
     return RefreshIndicator(
-      onRefresh: _loadStationRoutes,
+      // Pull-to-refresh with silent mode, avoid scroll position loss
+      onRefresh: () => _loadStationRoutes(silent: true),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _routes.length,
@@ -496,7 +504,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            ConvertedText(
                               route.routeName,
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -509,7 +517,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                                 const SizedBox(width: 4),
-                                Text('${localizations.from}: ${route.startStation ?? localizations.notAvailable}'),
+                                Text('${localizations.from}: ${_displayName(route.startStation, localizations.notAvailable)}'),
                               ],
                             ),
                             Row(
@@ -520,7 +528,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                                 const SizedBox(width: 4),
-                                Text('${localizations.to}: ${route.endStation ?? localizations.notAvailable}'),
+                                Text('${localizations.to}: ${_displayName(route.endStation, localizations.notAvailable)}'),
                               ],
                             ),
                           ],
@@ -588,5 +596,12 @@ class _StationDetailPageState extends State<StationDetailPage> {
       },
       ),
     );
+  }
+
+  /// Convert a place name to Traditional Chinese when the active locale
+  /// requires it; fall back to [fallback] for null/empty values.
+  String _displayName(String? name, String fallback) {
+    if (name == null || name.isEmpty) return fallback;
+    return ZhConverter.convertSync(name);
   }
 }

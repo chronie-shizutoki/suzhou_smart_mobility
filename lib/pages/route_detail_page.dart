@@ -4,6 +4,8 @@ import '../l10n/app_localizations.dart';
 import '../services/suzhi_bus_api.dart';
 import '../models/bus_predict.dart';
 import '../theme/glass_theme.dart';
+import '../widgets/glass_container.dart';
+import '../utils/zh_converter.dart';
 import 'station_detail_page.dart';
 
 class RouteDetailPage extends StatefulWidget {
@@ -55,7 +57,10 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
 
   void _startAutoRefresh() {
     _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
-      _loadRouteData(isAutoRefresh: true);
+      if (mounted) {
+        // Silent refresh: no fullscreen loading, no scroll position disruption
+        _loadRouteData(isAutoRefresh: true);
+      }
     });
   }
 
@@ -71,6 +76,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
       final routeDataResult = await SuZhiBusAPI.getRouteStationData(widget.routeId);
       final busDataResult = await SuZhiBusAPI.getBusBySegmentId(widget.segmentId);
 
+      if (!mounted) return;
       if (routeDataResult['status'] == true) {
         final items = routeDataResult['items'] as List?;
         if (items != null && items.isNotEmpty) {
@@ -120,6 +126,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
         _scrollToCurrentStation();
       }
     } catch (e) {
+      if (!mounted || isAutoRefresh) return; // Keep old data when silent refresh fails
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -136,6 +143,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
         segmentId: widget.segmentId,
       );
 
+      if (!mounted) return;
       if (forecastResult['status'] == true) {
         final items = forecastResult['items'] as List?;
         if (items != null && items.isNotEmpty) {
@@ -215,13 +223,11 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
   }
 
   Future<void> _onRefresh() async {
-    setState(() {
-      _isRefreshing = true;
-    });
-    await _loadRouteData();
-    setState(() {
-      _isRefreshing = false;
-    });
+    if (_isRefreshing) return;
+    _isRefreshing = true;
+    // Pull-to-refresh with silent mode, avoid full-page loading causing scroll position loss
+    await _loadRouteData(isAutoRefresh: true);
+    _isRefreshing = false;
   }
 
   void _onStationTap(Station station) {
@@ -344,7 +350,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${_routeDetail?.routeName} ${localizations.timetable}',
+                  '${ZhConverter.convertSync(_routeDetail?.routeName ?? '')} ${localizations.timetable}',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -399,29 +405,9 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                 ),
               ),
             Container(
-              constraints: const BoxConstraints(maxHeight: 400),
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                shrinkWrap: true,
-                itemCount: _timetable!.timetable?.length ?? 0,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.05)
-                            : Colors.black.withValues(alpha: 0.03),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        _timetable!.timetable![index],
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  );
-                },
+              constraints: const BoxConstraints(maxHeight: 360),
+              child: SingleChildScrollView(
+                child: _buildTimetableChart(context),
               ),
             ),
             const SizedBox(height: 20),
@@ -520,22 +506,17 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.blue.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.blue),
-              onPressed: () => Navigator.pop(context),
-            ),
+          GlassIconButton(
+            icon: Icons.arrow_back_ios_new_rounded,
+            iconColor: Colors.blue,
+            onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                ConvertedText(
                   widget.routeName,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -643,7 +624,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                   children: [
                     Row(
                       children: [
-                        Text(
+                        ConvertedText(
                           route.routeName,
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -661,7 +642,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${localizations.runDirection}: ${route.endStation}',
+                      '${localizations.runDirection}: ${ZhConverter.convertSync(route.endStation)}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -670,6 +651,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
               if (_isShowReverse)
                 IconButton(
                   icon: const Icon(Icons.swap_horiz),
+                  color: Theme.of(context).colorScheme.primary,
                   onPressed: _onReverseRoute,
                   tooltip: localizations.reverse,
                 ),
@@ -984,16 +966,17 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            station.stationName,
-                            style: TextStyle(
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              color: isSelected ? Colors.blue : null,
-                            ),
-                          ),
+                          child:                               ConvertedText(
+                                station.stationName,
+                                style: TextStyle(
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  color: isSelected ? Colors.blue : null,
+                                ),
+                              ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.info_outline, size: 18),
+                          color: Theme.of(context).colorScheme.primary,
                           onPressed: () => _onStationLongPress(station),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
@@ -1036,7 +1019,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                                     : Colors.grey,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Text(
+                              child:                               ConvertedText(
                                 metro.metroName,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -1082,6 +1065,109 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+
+  /// Build an intuitive departure-frequency chart from the timetable.
+  /// Each bar shows how many departures happen in a given hour, so
+  /// peak (rush) hours are visually obvious at a glance.
+  Widget _buildTimetableChart(BuildContext context) {
+    final times = _timetable?.timetable ?? [];
+    if (times.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Center(
+          child: Text(
+            localizations.noData,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final counts = List<int>.filled(24, 0);
+    for (final t in times) {
+      final parts = t.split(':');
+      if (parts.isEmpty) continue;
+      final hour = int.tryParse(parts.first);
+      if (hour != null && hour >= 0 && hour < 24) {
+        counts[hour]++;
+      }
+    }
+
+    var maxCount = 0;
+    for (final c in counts) {
+      if (c > maxCount) maxCount = c;
+    }
+
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+    final track = theme.colorScheme.onSurface.withValues(alpha: 0.06);
+
+    final hours = <int>[];
+    for (var h = 0; h < 24; h++) {
+      if (counts[h] > 0) hours.add(h);
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxBarWidth = constraints.maxWidth - 44 - 36;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: hours.map((h) {
+            final barWidth = maxCount > 0
+                ? (counts[h] / maxCount) * (maxBarWidth > 0 ? maxBarWidth : 0)
+                : 0.0;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 44,
+                    child: Text(
+                      '${h.toString().padLeft(2, '0')}:00',
+                      style: theme.textTheme.labelSmall?.copyWith(color: muted),
+                    ),
+                  ),
+                  SizedBox(
+                    width: maxBarWidth > 0 ? maxBarWidth : 0,
+                    height: 16,
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: track,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        Container(
+                          height: 16,
+                          width: barWidth,
+                          decoration: BoxDecoration(
+                            color: primary,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${counts[h]}',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }
