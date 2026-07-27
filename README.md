@@ -26,7 +26,6 @@ Suzhou Smart Mobility is a modern application developed with Flutter, designed t
     <td><img src="https://github.com/user-attachments/assets/2e045da8-749f-4221-bc5f-239e2bfe2c72" width="120" /></td>
     <td><img src="https://github.com/user-attachments/assets/5d501529-0840-4258-945b-3d5c207dfdd6" width="120" /></td>
   </tr>
-
 </table>
 
 ### Core Features
