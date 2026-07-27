@@ -11,7 +11,12 @@ import 'route_detail_page.dart';
 import 'station_detail_page.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  /// When provided, tapping a station result reports it here (used as the
+  /// left pane of the wide-screen two-column layout) instead of pushing a
+  /// full-screen detail page.
+  final ValueChanged<Station>? onStationSelected;
+
+  const SearchPage({super.key, this.onStationSelected});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -285,11 +290,11 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildTabBar(BuildContext context, AppLocalizations localizations) {
     final titles = [
-      localizations.searchStations ?? 'Stations',
-      localizations.routes ?? 'Routes',
+      localizations.searchStations,
+      localizations.routes,
     ];
     
-    final currentIndex = (_currentTabIndex ?? 0).clamp(0, titles.length - 1);
+    final currentIndex = (_currentTabIndex).clamp(0, titles.length - 1);
     
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -377,7 +382,11 @@ class _SearchPageState extends State<SearchPage> {
           padding: const EdgeInsets.only(bottom: 12),
           child: InkWell(
             onTap: () {
-              _openStationDetail(station);
+              if (widget.onStationSelected != null) {
+                widget.onStationSelected!(station);
+              } else {
+                _openStationDetail(station);
+              }
             },
             child: Container(
               decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,

@@ -222,7 +222,7 @@ class _LiquidNavBarState extends State<LiquidNavBar>
                             width: itemWidth,
                             duration: _isDragging ? Duration.zero : const Duration(milliseconds: 350),
                             curve: Curves.easeOutCubic,
-                            child: _LiquidThumb(
+                            child: LiquidThumb(
                               isDragging: _isDragging,
                               velocity: _velocity,
                               primaryColor: primaryColor,
@@ -312,14 +312,14 @@ class _LiquidNavBarState extends State<LiquidNavBar>
 
 }
 
-class _LiquidThumb extends StatelessWidget {
+class LiquidThumb extends StatelessWidget {
   final bool isDragging;
   final double velocity;
   final Color primaryColor;
   final bool isDarkMode;
   final NavBarMode mode;
 
-  const _LiquidThumb({
+  const LiquidThumb({
     required this.isDragging,
     required this.velocity,
     required this.primaryColor,

@@ -2,29 +2,68 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../services/suzhi_bus_api.dart';
+import '../models/station.dart' as station_models;
 import '../models/bus_predict.dart';
 import '../theme/glass_theme.dart';
 import '../widgets/glass_container.dart';
 import '../utils/zh_converter.dart';
 import 'station_detail_page.dart';
 
-class RouteDetailPage extends StatefulWidget {
+/// A lightweight reference identifying a bus route's directional segment.
+/// Used to drill from a station's detail into a route's detail as a slave
+/// pane without carrying around the whole route object.
+class RouteRef {
   final String segmentId;
   final String routeId;
   final String routeName;
 
-  const RouteDetailPage({
-    super.key,
+  const RouteRef({
     required this.segmentId,
     required this.routeId,
     required this.routeName,
   });
-
-  @override
-  State<RouteDetailPage> createState() => _RouteDetailPageState();
 }
 
-class _RouteDetailPageState extends State<RouteDetailPage> {
+/// Scaffold-free view that renders the route's real-time detail (route info,
+/// departure forecast, station timeline). It is used in two places:
+///  * inside [RouteDetailPage] (mobile: pushed as a full screen), and
+///  * as the right-most slave pane of the wide-screen master/detail layout,
+///    where [onBack] / [onNavigate] let the parent swap panes instead of
+///    pushing routes onto the navigator.
+class RouteDetailView extends StatefulWidget {
+  final String segmentId;
+  final String routeId;
+  final String routeName;
+
+  /// When provided, the back button in the header calls this instead of
+  /// [Navigator.pop] (used when the view lives inside a slave pane).
+  final VoidCallback? onBack;
+
+  /// When provided, tapping "reverse route" calls this with the new route
+  /// reference instead of pushing a replacement page (used in the slave pane).
+  final ValueChanged<RouteRef>? onNavigate;
+
+  /// When provided, opening a station (via the info button / long press on a
+  /// stop) calls this with the station instead of pushing a full-screen page,
+  /// so the station detail appears as a slave pane rather than taking over
+  /// the whole screen (used in the wide-screen master/detail layout).
+  final void Function(station_models.Station)? onOpenStation;
+
+  const RouteDetailView({
+    super.key,
+    required this.segmentId,
+    required this.routeId,
+    required this.routeName,
+    this.onBack,
+    this.onNavigate,
+    this.onOpenStation,
+  });
+
+  @override
+  State<RouteDetailView> createState() => _RouteDetailViewState();
+}
+
+class _RouteDetailViewState extends State<RouteDetailView> {
   RouteDetail? _routeDetail;
   Timetable? _timetable;
   List<Station> _stations = [];
@@ -81,7 +120,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
         final items = routeDataResult['items'] as List?;
         if (items != null && items.isNotEmpty) {
           final routeItems = items.map((e) => RouteDetail.fromJson(e as Map<String, dynamic>)).toList();
-          
+
           final currentRoute = routeItems.firstWhere(
             (r) => r.segmentId == widget.segmentId,
             orElse: () => routeItems.first,
@@ -92,7 +131,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
             _routeDetail = currentRoute;
             _isShowReverse = routeItems.length > 1;
             _stations = currentRoute.stations ?? [];
-            
+
             if (_currentStationId.isEmpty && _stations.isNotEmpty) {
               final nearbyStation = _stations.firstWhere(
                 (s) => s.isNearby == true,
@@ -158,6 +197,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           });
         }
       }
+    // ignore: empty_catches
     } catch (e) {
     }
   }
@@ -173,6 +213,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           });
         }
       }
+    // ignore: empty_catches
     } catch (e) {
     }
   }
@@ -182,7 +223,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
       final busList = _busInfoList
           .where((bus) => bus.arriveStationId == station.stationId)
           .toList();
-      
+
       return Station(
         stationId: station.stationId,
         stationName: station.stationName,
@@ -259,6 +300,20 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
   }
 
   void _onStationLongPress(Station station) {
+    if (widget.onOpenStation != null) {
+      // Convert the rich (bus_predict) Station into the simpler Station model
+      // used by the station detail pane.
+      widget.onOpenStation!(
+        station_models.Station(
+          stationId: station.stationId,
+          stationName: station.stationName,
+          latitude: station.latitude,
+          longitude: station.longitude,
+          stationRoad: station.stationRoad,
+        ),
+      );
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -275,11 +330,22 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
 
   void _onReverseRoute() {
     if (_allRoutes.length < 2) return;
-    
+
     final currentIndex = _allRoutes.indexWhere((r) => r.segmentId == widget.segmentId);
     final nextIndex = (currentIndex + 1) % _allRoutes.length;
     final nextRoute = _allRoutes[nextIndex];
-    
+
+    final ref = RouteRef(
+      segmentId: nextRoute.segmentId,
+      routeId: nextRoute.routeId,
+      routeName: nextRoute.routeName,
+    );
+
+    if (widget.onNavigate != null) {
+      widget.onNavigate!(ref);
+      return;
+    }
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -294,9 +360,9 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
 
   void _showTimetableBottomSheet() async {
     await _loadTimetable();
-    
+
     if (!mounted) return;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -307,7 +373,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
 
   Widget _buildTimetableBottomSheet(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -463,44 +529,17 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isDark
-                    ? [
-                        const Color(0xFF0F0F1A),
-                        const Color(0xFF1A1A2E),
-                        const Color(0xFF16213E),
-                      ]
-                    : [
-                        const Color(0xFFF0F4F8),
-                        const Color(0xFFE8EEF5),
-                        const Color(0xFFD9E2EC),
-                      ],
-              ),
-            ),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  _buildHeader(context, isDark),
-                  Expanded(
-                    child: _isLoading
-                        ? _buildLoading(context)
-                        : _errorMessage.isNotEmpty
-                            ? _buildError(context)
-                            : _buildContent(context, isDark),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+    return Column(
+      children: [
+        _buildHeader(context, isDark),
+        Expanded(
+          child: _isLoading
+              ? _buildLoading(context)
+              : _errorMessage.isNotEmpty
+                  ? _buildError(context)
+                  : _buildContent(context, isDark),
+        ),
+      ],
     );
   }
 
@@ -512,7 +551,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           GlassIconButton(
             icon: Icons.arrow_back_ios_new_rounded,
             iconColor: Colors.blue,
-            onPressed: () => Navigator.pop(context),
+            onPressed: widget.onBack ?? () => Navigator.pop(context),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -726,10 +765,10 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
     final currentTime = DateTime.now();
     final startTime = _routeDetail?.startTime;
     final endTime = _routeDetail?.endTime;
-    
+
     bool isBeforeStartTime = false;
     bool isAfterEndTime = false;
-    
+
     if (startTime != null && startTime.isNotEmpty) {
       try {
         final startParts = startTime.split(':');
@@ -745,10 +784,11 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           );
           isBeforeStartTime = currentTime.isBefore(startDateTime);
         }
+      // ignore: empty_catches
       } catch (e) {
       }
     }
-    
+
     if (endTime != null && endTime.isNotEmpty) {
       try {
         final endParts = endTime.split(':');
@@ -764,6 +804,7 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           );
           isAfterEndTime = currentTime.isAfter(endDateTime);
         }
+      // ignore: empty_catches
       } catch (e) {
       }
     }
@@ -970,12 +1011,12 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
                       children: [
                         Expanded(
                           child:                               ConvertedText(
-                                station.stationName,
-                                style: TextStyle(
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? Colors.blue : null,
-                                ),
-                              ),
+                            station.stationName,
+                            style: TextStyle(
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected ? Colors.blue : null,
+                            ),
+                          ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.info_outline, size: 18),
@@ -1215,6 +1256,56 @@ class _RouteDetailPageState extends State<RouteDetailPage> {
           }).toList(),
         );
       },
+    );
+  }
+}
+
+/// Mobile wrapper: wraps [RouteDetailView] in a full-screen Scaffold with the
+/// app gradient. Kept as the public entry point so existing callers
+/// (Navigator.push(RouteDetailPage(...))) keep working unchanged.
+class RouteDetailPage extends StatelessWidget {
+  final String segmentId;
+  final String routeId;
+  final String routeName;
+
+  const RouteDetailPage({
+    super.key,
+    required this.segmentId,
+    required this.routeId,
+    required this.routeName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isDark
+                ? [
+                    const Color(0xFF0F0F1A),
+                    const Color(0xFF1A1A2E),
+                    const Color(0xFF16213E),
+                  ]
+                : [
+                    const Color(0xFFF0F4F8),
+                    const Color(0xFFE8EEF5),
+                    const Color(0xFFD9E2EC),
+                  ],
+          ),
+        ),
+        child: SafeArea(
+          child: RouteDetailView(
+            segmentId: segmentId,
+            routeId: routeId,
+            routeName: routeName,
+          ),
+        ),
+      ),
     );
   }
 }

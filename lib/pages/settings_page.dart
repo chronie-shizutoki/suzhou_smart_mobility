@@ -4,7 +4,12 @@ import '../utils/settings_manager.dart';
 import '../widgets/glass_container.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  /// When true (large screens), the content is centered within 80% of the
+  /// screen width and the extra bottom padding used to clear the floating
+  /// navigation bar is removed (there is no master/detail here).
+  final bool wideMode;
+
+  const SettingsPage({super.key, this.wideMode = false});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -103,7 +108,16 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               _buildHeader(context, localizations),
               Expanded(
-                child: _buildContent(context, localizations, isDark),
+                child: widget.wideMode
+                    ? Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.8,
+                          ),
+                          child: _buildContent(context, localizations, isDark),
+                        ),
+                      )
+                    : _buildContent(context, localizations, isDark),
               ),
             ],
           ),
@@ -131,8 +145,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildContent(BuildContext context, AppLocalizations localizations, bool isDark) {
     return ListView(
-      // Bottom padding to avoid overlapping with floating navigation bar
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
+      // Bottom padding to avoid overlapping with floating navigation bar on
+      // phones; on wide screens the page is centered and that padding is unused.
+      padding: widget.wideMode
+          ? const EdgeInsets.fromLTRB(16, 8, 16, 24)
+          : const EdgeInsets.fromLTRB(16, 16, 16, 110),
       children: [
         _buildCareModeSection(context, localizations, isDark),
         // Font-size slider is only relevant when care mode is enabled.

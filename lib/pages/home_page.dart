@@ -10,7 +10,23 @@ import '../utils/zh_converter.dart';
 import 'route_detail_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  /// When provided, the page renders as a flat, tappable station list
+  /// (used as the left pane of the wide-screen two-column layout) and
+  /// reports the chosen station through [onStationSelected] instead of
+  /// expanding routes inline.
+  final Station? selectedStation;
+  final ValueChanged<Station>? onStationSelected;
+
+  /// Shows an inline search box at the top of the list so users can switch
+  /// between nearby stations and station search results on large screens.
+  final bool showSearch;
+
+  const HomePage({
+    super.key,
+    this.selectedStation,
+    this.onStationSelected,
+    this.showSearch = false,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,6 +43,12 @@ class _HomePageState extends State<HomePage> {
   static const int _defaultExpandedCount = 4;
   Timer? _refreshTimer;
 
+  // Wide-screen search state (only used when [widget.showSearch] is true)
+  final TextEditingController _searchController = TextEditingController();
+  List<Station> _searchResults = [];
+  bool _isSearching = false;
+  String _searchError = '';
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +59,47 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _refreshTimer?.cancel();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _runSearch() async {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _searchError = '';
+      });
+      return;
+    }
+
+    setState(() {
+      _isSearching = true;
+      _searchError = '';
+      _searchResults = [];
+    });
+
+    try {
+      final result = await SuZhiBusAPI.searchStations(query);
+      if (result['status'] == true && result['items'] != null) {
+        setState(() {
+          _searchResults = (result['items'] as List)
+              .map((e) => Station.fromJson(e as Map<String, dynamic>))
+              .toList();
+          _isSearching = false;
+        });
+      } else {
+        setState(() {
+          _searchError = result['msg']?.toString() ?? AppLocalizations.of(context)!.unknownError;
+          _isSearching = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _searchError = e.toString();
+        _isSearching = false;
+      });
+    }
   }
 
   void _startAutoRefresh() {
@@ -269,7 +331,9 @@ class _HomePageState extends State<HomePage> {
             children: [
               _buildHeader(context, localizations),
               Expanded(
-                child: _buildContent(context, localizations, isDark),
+                child: widget.onStationSelected != null
+                    ? _buildSelectionList(context, localizations, isDark)
+                    : _buildContent(context, localizations, isDark),
               ),
             ],
           ),
@@ -279,6 +343,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHeader(BuildContext context, AppLocalizations localizations) {
+    final bool searching = _searchController.text.trim().isNotEmpty;
+    final int count = searching ? _searchResults.length : _nearbyStations.length;
+
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -300,17 +367,230 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(width: 4),
               Text(
-                _nearbyStations.isEmpty
-                    ? localizations.noData
-                    : '${_nearbyStations.length}',
+                count == 0 ? localizations.noData : '$count',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
               ),
             ],
           ),
+          if (widget.showSearch) ...[
+            const SizedBox(height: 16),
+            _buildSearchField(context, localizations),
+          ],
         ],
       ),
+    );
+  }
+
+  Widget _buildSearchField(BuildContext context, AppLocalizations localizations) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration,
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: localizations.searchPlaceholder,
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          _runSearch();
+                        },
+                      )
+                    : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+              onChanged: (value) => setState(() {}),
+              onSubmitted: (_) => _runSearch(),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.blue.withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: _runSearch,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Flat, tappable station list used as the left pane on wide screens.
+  /// Tapping a station reports it through [HomePage.onStationSelected] so the
+  /// right pane can show its real-time vehicle info.
+  Widget _buildSelectionList(BuildContext context, AppLocalizations localizations, bool isDark) {
+    final bool searching = _searchController.text.trim().isNotEmpty;
+    final List<Station> list = searching ? _searchResults : _nearbyStations;
+    final bool loading = searching ? _isSearching : _isLoading;
+    final String error = searching ? _searchError : _errorMessage;
+
+    if (loading && list.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(localizations.loading),
+          ],
+        ),
+      );
+    }
+
+    if (error.isNotEmpty && list.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                error,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (list.isEmpty && !loading) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              searching ? Icons.search_off : Icons.location_off,
+              size: 64,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              localizations.noData,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        final station = list[index];
+        final isSelected = widget.selectedStation?.stationId == station.stationId;
+        final primary = Theme.of(context).colorScheme.primary;
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            onTap: () => widget.onStationSelected!(station),
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              decoration: (isDark ? GlassTheme.glassDecorationDark : GlassTheme.glassDecoration).copyWith(
+                border: isSelected
+                    ? Border.all(color: primary, width: 2)
+                    : Border.all(color: Colors.transparent),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      isSelected ? Icons.location_on : Icons.location_on_outlined,
+                      color: primary,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ConvertedText(
+                          station.stationName,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        if (station.stationRoad != null || station.stationDirect != null) ...[
+                          const SizedBox(height: 4),
+                          ConvertedText(
+                            _buildStationTitle(station),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
+                          ),
+                        ],
+                        if (station.distance != null) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.directions_walk,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _buildWalkingTime(station.distance),
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Icon(
+                                Icons.straighten,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${localizations.distance}: ${station.distance!.toStringAsFixed(0)} ${localizations.meters}',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    color: isSelected
+                        ? primary
+                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

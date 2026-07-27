@@ -74,8 +74,7 @@ class SettingsManager extends ChangeNotifier {
         themeModeValue = 'dark';
         break;
       case ThemeMode.system:
-      default:
-        themeModeValue = 'system';
+      themeModeValue = 'system';
         break;
     }
     await prefs.setString('themeMode', themeModeValue);
